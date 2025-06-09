@@ -13,7 +13,6 @@
   let
     overlays =
     [
-      retro68.overlays.default
       (import ./overlay.nix)
     ];
 
@@ -21,6 +20,17 @@
 
     platforms = {
       "ppc-macos" = retro68Platforms.powerpc;
+      "i686-mingw32" = pkgs.pkgsCross.mingw32.stdenv.hostPlatform // {
+        retro68 = false;
+      };
+    };
+
+    makePkgsCross = crossSystem: import nixpkgs {
+      inherit system crossSystem;
+      overlays = overlays ++ (
+        if crossSystem.retro68 then retro68.overlays.default else []
+      );
+      config.allowUnsupportedSystem = true;
     };
 
     pkgs = import nixpkgs {
@@ -29,10 +39,11 @@
   in {
     legacyPackages = pkgs;
 
-    packages.pkgsCross = builtins.mapAttrs
-      (name: crossSystem: import nixpkgs {
-        inherit system crossSystem overlays;
-        config.allowUnsupportedSystem = true;
-      }) platforms;
+    packages = {
+      pkgsCross = builtins.mapAttrs
+        (_: makePkgsCross) platforms;
+    } // builtins.foldl'
+      (l: r: l // { "demo-${r}" = (makePkgsCross platforms.${r}).wxkitchen-demo; })
+      {} (builtins.attrNames platforms);
   });
 }
