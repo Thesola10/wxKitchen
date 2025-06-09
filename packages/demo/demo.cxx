@@ -20,3 +20,8 @@ DemoFrame::DemoFrame(const wxString &title, const wxPoint &pos, const wxSize &si
 {
     Button1 = new wxButton(this, ID_Bt_Click, _T("Cool, huh?"));
 }
+
+void DemoFrame::OnClickButton1(wxCommandEvent &event)
+{
+    return;
+}

@@ -2,7 +2,10 @@
   stdenv,
   lib,
   wxWidgets,
-  wxc
+  wxc,
+  libjpeg_original,
+  libpng,
+  zlib
 }:
 
 {
@@ -22,6 +25,6 @@ stdenv.mkDerivation args // {
   preConfigure = ''
     export CFLAGS="$(${wxWidgets}/bin/wx-config --cflags)"
     export CXXFLAGS="$(${wxWidgets}/bin/wx-config --cxxflags)"
-    export LDFLAGS="$(${wxWidgets}/bin/wx-config --libs)"
+    export LDFLAGS="$(${wxWidgets}/bin/wx-config --libs) -L${lib.getLib libjpeg_original}/lib -L${zlib}/lib"
   '';
 }

@@ -1,7 +1,10 @@
 {
   stdenv,
   buildWxApp,
-  wxWidgets
+  wxWidgets,
+  lib,
+  zlib,
+  libjpeg_original
 }:
 
 let
@@ -15,8 +18,8 @@ in buildWxApp {
   buildPhase = ''
     export CFLAGS="$(${wxWidgets}/bin/wx-config --cflags)"
     export CXXFLAGS="$(${wxWidgets}/bin/wx-config --cxxflags)"
-    export LDFLAGS="$(${wxWidgets}/bin/wx-config --libs)"
+    export LDFLAGS="-L${lib.getLib libjpeg_original}/lib -L${zlib}/lib $(${wxWidgets}/bin/wx-config --libs)"
     mkdir -p $out/bin
-    $CXX $CXXFLAGS $LDFLAGS -o $out/bin/wxKitchenDemo${exe} demo.cxx
+    $CXX $CXXFLAGS demo.cxx $LDFLAGS -o $out/bin/wxKitchenDemo${exe}
   '';
 }

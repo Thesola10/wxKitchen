@@ -20,15 +20,13 @@
 
     platforms = {
       "ppc-macos" = retro68Platforms.powerpc;
-      "i686-mingw32" = pkgs.pkgsCross.mingw32.stdenv.hostPlatform // {
-        retro68 = false;
-      };
+      "i686-mingw32" = pkgs.pkgsCross.mingw32.stdenv.hostPlatform;
     };
 
     makePkgsCross = crossSystem: import nixpkgs {
       inherit system crossSystem;
       overlays = overlays ++ (
-        if crossSystem.retro68 then retro68.overlays.default else []
+        if (crossSystem.retro68 or false) then retro68.overlays.default else []
       );
       config.allowUnsupportedSystem = true;
     };

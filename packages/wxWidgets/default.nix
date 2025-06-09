@@ -7,7 +7,7 @@
   pcre2,
   pkg-config,
   unicode ? true,
-  withMac ? stdenv.hostPlatform.retro68,
+  withMac ? stdenv.hostPlatform.retro68 or false,
   withMSW ? stdenv.hostPlatform.isWindows
 }:
 stdenv.mkDerivation rec {
@@ -44,7 +44,7 @@ stdenv.mkDerivation rec {
     [
       "--disable-shared"
       "--enable-gui"
-      "--enable-monolithic"
+      "--disable-monolithic"
       "--enable-filesystem"
       "--enable-vendor=wxKitchen"
       "--enable-url"
