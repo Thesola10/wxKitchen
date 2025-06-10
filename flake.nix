@@ -38,8 +38,7 @@
     legacyPackages = pkgs;
 
     packages = {
-      pkgsCross = builtins.mapAttrs
-        (_: makePkgsCross) platforms;
+      pkgsCross = builtins.mapAttrs (_: makePkgsCross) platforms;
     } // builtins.foldl'
       (l: r: l // {
         "demo-${r}" = (makePkgsCross platforms.${r}).wxkitchen-demo;
