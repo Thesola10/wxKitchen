@@ -46,13 +46,13 @@ in stdenv.mkDerivation rec {
     # I can't just declare Retro68 a "Unix" because many key functions just
     # aren't implemented.
     lib.optionals isRetro68 [
-      ./0000-mac-drop-pascal-strings.patch
-      ./0001-mac-disable-win32-defines.patch
-      ./0002-mac-expose-strptime.patch
-      ./0003-mac-add-retro68-detection.patch
-      ./0004-mac-add-missing-unistd-h.patch
-      ./0005-mac-fix-GetTempBuffer-declaration.patch
-      ./0006-mac-fix-return-types.patch
+      ./patches/0000-mac-drop-pascal-strings.patch
+      ./patches/0001-mac-disable-win32-defines.patch
+      ./patches/0002-mac-expose-strptime.patch
+      ./patches/0003-mac-add-retro68-detection.patch
+      ./patches/0004-mac-add-missing-unistd-h.patch
+      ./patches/0005-mac-fix-GetTempBuffer-declaration.patch
+      ./patches/0006-mac-fix-return-types.patch
     ];
 
   # This is how you know this software is very obsolete

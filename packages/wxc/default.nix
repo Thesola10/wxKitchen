@@ -39,5 +39,7 @@ in stdenv.mkDerivation rec {
   installPhase = ''
     cp -r out/bindist/wxhaskell-${version} $out
     cp -r wxc/include $out/include
+    cd $out/lib
+    ln -s libwxc-*.a libwxc.a
   '';
 }

@@ -41,7 +41,9 @@
       pkgsCross = builtins.mapAttrs
         (_: makePkgsCross) platforms;
     } // builtins.foldl'
-      (l: r: l // { "demo-${r}" = (makePkgsCross platforms.${r}).wxkitchen-demo; })
-      {} (builtins.attrNames platforms);
+      (l: r: l // {
+        "demo-${r}" = (makePkgsCross platforms.${r}).wxkitchen-demo;
+        "c-demo-${r}" = (makePkgsCross platforms.${r}).wxkitchen-c-demo;
+      }) {} (builtins.attrNames platforms);
   });
 }

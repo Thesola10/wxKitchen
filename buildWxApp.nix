@@ -20,7 +20,9 @@ stdenv.mkDerivation (args // {
     wxc
   ] ++ buildInputs;
 
-  NIX_CFLAGS_COMPILE = lib.readFile "${wxWidgets}/nix-support/cc-cflags";
+  NIX_CFLAGS_COMPILE = (lib.readFile "${wxWidgets}/nix-support/cc-cflags")
+                     + lib.optionalString withWxc "-I${wxc}/include -imacros ${wxWidgets}/include/wx/wx.h";
   NIX_CXXFLAGS_COMPILE = lib.readFile "${wxWidgets}/nix-support/libcxx-cxxflags";
-  NIX_CFLAGS_LINK = lib.readFile "${wxWidgets}/nix-support/cc-ldflags";
+  NIX_CFLAGS_LINK = (lib.readFile "${wxWidgets}/nix-support/cc-ldflags")
+                  + lib.optionalString withWxc "-L${wxc}/lib -lwxc";
 })

@@ -45,6 +45,7 @@ self: super: {
 
   buildWxApp = self.callPackage ./buildWxApp.nix {};
 
+  wxkitchen-c-demo = self.callPackage ./packages/cdemo {};
   wxkitchen-demo = self.callPackage ./packages/demo {};
 
   macSdk1028 = super.pkgsBuildBuild.fetchzip {
