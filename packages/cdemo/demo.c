@@ -5,16 +5,18 @@ typedef long unsigned int time_t;
 
 void *closure;
 
-int main(int argc, char *argv[])
+void app_main(void *dat)
 {
-    ELJApp_InitializeC(closure, argc, argv);
-
     void *fr = wxFrame_Create(NULL, 1000, "wxKitchen demo written in C", 40, 40, 320, 240, wxDEFAULT_FRAME_STYLE);
 
-    void *ev = wxEvtHandler_Create();
-    wxEvtHandler_ProcessPendingEvents(ev);
+    wxWindow_Show(fr);
 
     ELJApp_SetTopWindow(fr);
+}
 
-    ELJApp_MainLoop();
+int main(int argc, char *argv[])
+{
+    void *closure = wxClosure_Create(app_main, NULL);
+
+    ELJApp_InitializeC(closure, argc, argv);
 }
