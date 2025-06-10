@@ -3,28 +3,24 @@
   lib,
   wxWidgets,
   wxc,
-  libjpeg_original,
-  libpng,
-  zlib
 }:
 
 {
   withWxc ? false,
+  buildInputs ? [],
   ...
 }@args:
 
-stdenv.mkDerivation args // {
+stdenv.mkDerivation (args // {
   hardeningDisable = [ "all" ];
 
   buildInputs = [
     wxWidgets
   ] ++ lib.optionals withWxc [
     wxc
-  ] ++ args.buildInputs;
+  ] ++ buildInputs;
 
-  preConfigure = ''
-    export CFLAGS="$(${wxWidgets}/bin/wx-config --cflags)"
-    export CXXFLAGS="$(${wxWidgets}/bin/wx-config --cxxflags)"
-    export LDFLAGS="$(${wxWidgets}/bin/wx-config --libs) -L${lib.getLib libjpeg_original}/lib -L${zlib}/lib"
-  '';
-}
+  NIX_CFLAGS_COMPILE = lib.readFile "${wxWidgets}/nix-support/cc-cflags";
+  NIX_CXXFLAGS_COMPILE = lib.readFile "${wxWidgets}/nix-support/libcxx-cxxflags";
+  NIX_CFLAGS_LINK = lib.readFile "${wxWidgets}/nix-support/cc-ldflags";
+})

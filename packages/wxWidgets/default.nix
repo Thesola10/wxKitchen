@@ -3,6 +3,7 @@
   stdenv,
   fetchFromGitHub,
   libjpeg_original,
+  zlib,
   pcre2,
   pkg-config,
   macSdk1028,
@@ -30,6 +31,7 @@ in stdenv.mkDerivation rec {
   propagatedBuildInputs =
     [
       libjpeg_original
+      zlib
     ];
 
   buildInputs =
@@ -84,6 +86,12 @@ in stdenv.mkDerivation rec {
       pushd $out/include
       ln -s wx-*/* .
       popd
+
+      mkdir -p $out/nix-support
+      $out/bin/wx-config --cflags > $out/nix-support/cc-cflags
+      $out/bin/wx-config --cxxflags > $out/nix-support/libcxx-cxxflags
+      $out/bin/wx-config --libs > $out/nix-support/cc-ldflags
+      echo "-L${libjpeg_original}/lib -L${zlib}/lib" >> $out/nix-support/cc-ldflags
     '';
 
     enableParallelBuilding = true;
