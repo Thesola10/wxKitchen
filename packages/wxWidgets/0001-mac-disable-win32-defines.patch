@@ -1,0 +1,13 @@
+diff --git a/include/wx/platform.h b/include/wx/platform.h
+index 71abcfc..8430a44 100644
+--- a/include/wx/platform.h
++++ b/include/wx/platform.h
+@@ -439,7 +439,7 @@
+ #        error "__WXMSW__ should not be defined for PalmOS"
+ #    endif
+ 
+-#else   /* Windows */
++#elif defined(__WIN32__)   /* Windows */
+ #    ifndef __WINDOWS__
+ #        define __WINDOWS__
+ #    endif  /* Windows */

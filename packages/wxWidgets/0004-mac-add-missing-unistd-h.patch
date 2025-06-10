@@ -1,0 +1,12 @@
+diff --git a/src/common/filefn.cpp b/src/common/filefn.cpp
+index 8c7189a..ac1df54 100644
+--- a/src/common/filefn.cpp
++++ b/src/common/filefn.cpp
+@@ -95,6 +95,7 @@
+ 
+ #ifdef __WXMAC__
+ #    include "MoreFilesX.h"
++#    include <unistd.h>
+ #endif
+ 
+ // ----------------------------------------------------------------------------

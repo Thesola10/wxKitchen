@@ -1,0 +1,12 @@
+diff --git a/configure b/configure
+index 00d335b..7e131d5 100755
+--- a/configure
++++ b/configure
+@@ -30476,7 +30476,6 @@ echo $ECHO_N "checking for compiler syntax to enable Pascal strings... $ECHO_C"
+         if test "$GCC" = yes; then
+             echo "$as_me:$LINENO: result: gcc" >&5
+ echo "${ECHO_T}gcc" >&6
+-            CPPFLAGS_PASCAL="-fpascal-strings"
+         elif test "`echo $CXX | sed -e 's@.*/@@'`" = "xlC"; then
+             echo "$as_me:$LINENO: result: xlc" >&5
+ echo "${ECHO_T}xlc" >&6

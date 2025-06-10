@@ -1,0 +1,16 @@
+diff --git a/src/common/datetime.cpp b/src/common/datetime.cpp
+index 52c8627..621ef74 100644
+--- a/src/common/datetime.cpp
++++ b/src/common/datetime.cpp
+@@ -398,9 +398,9 @@ static wxString CallStrftime(const wxChar *format, const tm* tm)
+ 
+ // glibc2 doesn't define this in the headers unless _XOPEN_SOURCE is defined
+ // which, unfortunately, wreaks havoc elsewhere
+-#if defined(__GLIBC__) && (__GLIBC__ == 2)
++//#if defined(__GLIBC__) && (__GLIBC__ == 2)
+     extern "C" char *strptime(const char *, const char *, struct tm *);
+-#endif
++//#endif
+ 
+ // Unicode-friendly strptime() wrapper
+ static const wxChar *

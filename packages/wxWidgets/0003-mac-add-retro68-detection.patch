@@ -1,0 +1,150 @@
+diff --git a/src/common/file.cpp b/src/common/file.cpp
+index ae71d0e..857c829 100644
+--- a/src/common/file.cpp
++++ b/src/common/file.cpp
+@@ -57,7 +57,7 @@
+     #include  "wx/msw/missing.h"
+ #elif (defined(__OS2__))
+     #include <io.h>
+-#elif (defined(__UNIX__) || defined(__GNUWIN32__))
++#elif (defined(__UNIX__) || defined(__GNUWIN32__) || defined(Macintosh))
+     #include  <unistd.h>
+     #include  <time.h>
+     #include  <sys/stat.h>
+@@ -105,7 +105,7 @@
+ 
+ // there is no distinction between text and binary files under Unix, so define
+ // O_BINARY as 0 if the system headers don't do it already
+-#if defined(__UNIX__) && !defined(O_BINARY)
++#if (defined(__UNIX__) || defined(Macintosh)) && !defined(O_BINARY)
+     #define   O_BINARY    (0)
+ #endif  //__UNIX__
+ 
+@@ -438,7 +438,7 @@ bool wxFile::Eof() const
+ 
+     wxFileOffset iRc;
+ 
+-#if defined(__DOS__) || defined(__UNIX__) || defined(__GNUWIN32__) || defined( __MWERKS__ ) || defined(__SALFORDC__)
++#if defined(__DOS__) || defined(__UNIX__) || defined(__GNUWIN32__) || defined( __MWERKS__ ) || defined(__SALFORDC__) || defined(Macintosh)
+     // @@ this doesn't work, of course, on unseekable file descriptors
+     wxFileOffset ofsCur = Tell(),
+     ofsMax = Length();
+diff --git a/include/wx/mac/carbon/private.h b/include/wx/mac/carbon/private.h
+index 083f229..290eff4 100644
+--- a/include/wx/mac/carbon/private.h
++++ b/include/wx/mac/carbon/private.h
+@@ -17,7 +17,7 @@
+ #include "wx/defs.h"
+ #include "wx/app.h"
+ 
+-#ifdef __DARWIN__
++#if defined(__DARWIN__) || defined(Macintosh)
+ #    include <Carbon/Carbon.h>
+ #else
+ #    include <Debugging.h>
+diff --git a/src/common/filename.cpp b/src/common/filename.cpp
+index a0523bb..1646f5f 100644
+--- a/src/common/filename.cpp
++++ b/src/common/filename.cpp
+@@ -101,7 +101,7 @@
+ #endif
+ 
+ // utime() is POSIX so should normally be available on all Unices
+-#ifdef __UNIX_LIKE__
++#if defined(__UNIX_LIKE__) || defined(Macintosh)
+ #include <sys/types.h>
+ #include <utime.h>
+ #include <sys/stat.h>
+diff --git a/src/mac/carbon/dirmac.cpp b/src/mac/carbon/dirmac.cpp
+index bec8035..c3680d0 100644
+--- a/src/mac/carbon/dirmac.cpp
++++ b/src/mac/carbon/dirmac.cpp
+@@ -36,7 +36,7 @@
+ #include "wx/dir.h"
+ #include "wx/filefn.h"          // for wxDirExists()
+ 
+-#ifndef __DARWIN__
++#if !(defined(__DARWIN__) || defined(Macintosh))
+   #include <windows.h>
+ #endif
+ 
+diff --git a/include/wx/mac/carbon/checklst.h b/include/wx/mac/carbon/checklst.h
+index df3f235..085e7a3 100644
+--- a/include/wx/mac/carbon/checklst.h
++++ b/include/wx/mac/carbon/checklst.h
+@@ -17,7 +17,7 @@
+ #pragma interface "checklst.h"
+ #endif
+ 
+-#if !defined(__MWERKS__) && !defined(__UNIX__)
++#if !defined(__MWERKS__) && !defined(__UNIX__) && !defined(Macintosh)
+ typedef   unsigned int  size_t;
+ #endif
+
+diff --git a/src/mac/carbon/app.cpp b/src/mac/carbon/app.cpp
+index 703f001..d679366 100644
+--- a/src/mac/carbon/app.cpp
++++ b/src/mac/carbon/app.cpp
+@@ -43,6 +43,10 @@
+ 
+ // mac
+ 
++#ifdef Macintosh
++  #define __option(x) 0
++#endif
++
+ #ifndef __DARWIN__
+   #if __option(profile)
+     #include <profiler.h>
+diff --git a/src/mac/carbon/display.cpp b/src/mac/carbon/display.cpp
+index 7dc8cf8..b7646eb 100644
+--- a/src/mac/carbon/display.cpp
++++ b/src/mac/carbon/display.cpp
+@@ -28,7 +28,7 @@
+    #include "wx/msgdlg.h"
+ #endif
+ 
+-#ifdef __DARWIN__
++#if defined(__DARWIN__) || defined(Macintosh)
+     #include <Carbon/Carbon.h>
+ #else
+     #include <Gestalt.h>
+diff --git a/src/mac/carbon/textctrl.cpp b/src/mac/carbon/textctrl.cpp
+index d116f73..3798346 100644
+--- a/src/mac/carbon/textctrl.cpp
++++ b/src/mac/carbon/textctrl.cpp
+@@ -18,7 +18,7 @@
+ #if wxUSE_TEXTCTRL
+ 
+ 
+-#ifdef __DARWIN__
++#if defined(__DARWIN__) || defined(Macintosh)
+   #include <sys/types.h>
+   #include <sys/stat.h>
+ #else
+diff --git a/src/generic/helpext.cpp b/src/generic/helpext.cpp
+index 90bbedc..d608064 100644
+--- a/src/generic/helpext.cpp
++++ b/src/generic/helpext.cpp
+@@ -155,7 +155,7 @@ wxExtHelpController::DisplayHelp(const wxString &relativeURL)
+ #else // UNIX
+    wxString command;
+ 
+-#ifndef __EMX__
++#if !(defined(__EMX__) || defined(Macintosh))
+    if(m_BrowserIsNetscape) // try re-loading first
+    {
+       wxString lockfile;
+diff --git a/src/mac/carbon/sound.cpp b/src/mac/carbon/sound.cpp
+index b63f963..783695b 100644
+--- a/src/mac/carbon/sound.cpp
++++ b/src/mac/carbon/sound.cpp
+@@ -45,7 +45,7 @@
+ 
+ #ifdef __WXMAC__
+ #include "wx/mac/uma.h"
+-#ifndef __DARWIN__
++#if !(defined(__DARWIN__) || defined(Macintosh))
+ #include <Movies.h>
+ #include <Gestalt.h>
+ #endif

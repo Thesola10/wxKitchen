@@ -12,22 +12,22 @@
   flake-utils.lib.eachDefaultSystem (system:
   let
     overlays =
-    [
-      (import ./overlay.nix)
+    [ # for some reason even 'super' nets me an infinite recursion, so evaluate nixpkgs twice
+      (import ./overlay.nix { pkgsRetro68 = retro68.legacyPackages.${system}.pkgsCross.carbon.retro68; })
     ];
 
     retro68Platforms = (import "${retro68}/nix/platforms.nix");
 
     platforms = {
-      "ppc-macos" = retro68Platforms.powerpc;
+      "ppc-macos" = retro68Platforms.carbon;
       "i686-mingw32" = pkgs.pkgsCross.mingw32.stdenv.hostPlatform;
     };
 
     makePkgsCross = crossSystem: import nixpkgs {
       inherit system crossSystem;
-      overlays = overlays ++ (
-        if (crossSystem.retro68 or false) then retro68.overlays.default else []
-      );
+      overlays = (
+        if (crossSystem.retro68 or false) then [ retro68.overlays.default ] else []
+      ) ++ overlays;
       config.allowUnsupportedSystem = true;
     };
 

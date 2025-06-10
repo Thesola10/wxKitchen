@@ -1,0 +1,13 @@
+diff --git a/src/mac/carbon/menu.cpp b/src/mac/carbon/menu.cpp
+index 17017c3..83150c8 100644
+--- a/src/mac/carbon/menu.cpp
++++ b/src/mac/carbon/menu.cpp
+@@ -832,7 +832,7 @@ wxMenu *wxMenuBar::Replace(size_t pos, wxMenu *menu, const wxString& title)
+ {
+     wxMenu *menuOld = wxMenuBarBase::Replace(pos, menu, title);
+     if ( !menuOld )
+-        return false;
++        return NULL;
+     m_titles[pos] = title;
+ 
+     if ( IsAttached() )
