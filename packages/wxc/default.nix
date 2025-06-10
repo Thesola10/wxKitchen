@@ -12,19 +12,15 @@ let
   '';
 in stdenv.mkDerivation rec {
   pname = "wxc";
-  version = "0.11.0";
+  version = "0.9.4";
 
   src = fetchFromGitea {
     domain = "codeberg.org";
     owner = "wxHaskell";
     repo = "wxHaskell";
-    rev = version;
-    hash = "sha256-FQNOcZhKCSzIBQRt8CUZBvVB0OonrjiSUC1DWcam+O8=";
+    rev = "wxhakell-0-9-4";
+    hash = "sha256-0bfQztJb434Zkzp0+7/yTz2OrTYtCKf3BhZbvVdIe/E=";
   };
-
-  patches = [
-    ./0000-fix-stc-return-types.patch
-  ];
 
   buildInputs = [
     wxWidgets
@@ -38,5 +34,10 @@ in stdenv.mkDerivation rec {
 
   buildPhase = ''
     make wxc-bindist
+  '';
+
+  installPhase = ''
+    cp -r out/bindist/wxhaskell-${version} $out
+    cp -r wxc/include $out/include
   '';
 }

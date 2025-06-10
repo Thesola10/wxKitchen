@@ -62,6 +62,10 @@ self: super: {
             package = null;
           };
         };
+        extraBuildCommands = ''
+          echo "-static-libstdc++" >> $out/nix-support/libcxx-cxxflags
+          echo "-static-libgcc" >> $out/nix-support/cc-cflags
+        '';
       }))
     else if (super.stdenv.hostPlatform.retro68 or false) then
       super.overrideCC super.stdenv
