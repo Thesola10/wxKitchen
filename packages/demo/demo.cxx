@@ -18,7 +18,8 @@ bool DemoApp::OnInit()
 DemoFrame::DemoFrame(const wxString &title, const wxPoint &pos, const wxSize &size)
         : wxFrame((wxFrame *)NULL, -1, title, pos, size)
 {
-    Button1 = new wxButton(this, ID_Bt_Click, _T("Cool, huh?"), wxDefaultPosition, wxDefaultSize, wxBU_EXACTFIT);
+    wxPanel *panel = new wxPanel(this, -1, wxDefaultPosition, wxDefaultSize);
+    Button1 = new wxButton(panel, ID_Bt_Click, _T("Cool, huh?"), wxDefaultPosition, wxDefaultSize, wxBU_EXACTFIT);
 }
 
 void DemoFrame::OnClickButton1(wxCommandEvent &event)
