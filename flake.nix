@@ -20,6 +20,7 @@
           retro68.overlays.default
           (import ./overlays/macos.nix {
             pkgsRetro68 = retro68.legacyPackages.${system}.pkgsCross.carbon.retro68;
+            pathToRetro68 = retro68;
           })
           (import ./overlays/all.nix)
         ];

@@ -51,19 +51,6 @@ index ae71d0e..857c829 100644
      // @@ this doesn't work, of course, on unseekable file descriptors
      wxFileOffset ofsCur = Tell(),
      ofsMax = Length();
-diff --git a/include/wx/mac/carbon/private.h b/include/wx/mac/carbon/private.h
-index 083f229..290eff4 100644
---- a/include/wx/mac/carbon/private.h
-+++ b/include/wx/mac/carbon/private.h
-@@ -17,7 +17,7 @@
- #include "wx/defs.h"
- #include "wx/app.h"
- 
--#ifdef __DARWIN__
-+#if defined(__DARWIN__) || defined(Macintosh)
- #    include <Carbon/Carbon.h>
- #else
- #    include <Debugging.h>
 diff --git a/src/common/filename.cpp b/src/common/filename.cpp
 index a0523bb..1646f5f 100644
 --- a/src/common/filename.cpp
