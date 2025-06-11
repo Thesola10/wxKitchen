@@ -6,7 +6,6 @@
   zlib,
   pcre2,
   pkg-config,
-  macSdk1028,
   unicode ? true,
   withMac ? stdenv.hostPlatform.retro68 or false,
   withMSW ? stdenv.hostPlatform.isWindows
@@ -60,10 +59,10 @@ in stdenv.mkDerivation rec {
 
   CFLAGS = "-fpermissive -Wno-error=narrowing"
          + lib.optionalString stdenv.hostPlatform.isWindows " -D_mkdir=mkdir -D_rmdir=rmdir"
-         + lib.optionalString isRetro68 " -DTARGET_API_MAC_OSX=0 -DTARGET_API_MAC_CARBON=1 -DPRAGMA_ONCE=0";
+         + lib.optionalString isRetro68 " -DTARGET_API_MAC_OSX=0 -DTARGET_API_MAC_CARBON=1 -DBuildingMoreFilesXForMacOS9";
   CXXFLAGS = "-fpermissive -Wno-error=narrowing"
            + lib.optionalString stdenv.hostPlatform.isWindows " -D_mkdir=mkdir -D_rmdir=rmdir"
-           + lib.optionalString isRetro68 " -DTARGET_API_MAC_OSX=0 -DTARGET_API_MAC_CARBON=1 -DPRAGMA_ONCE=0";
+           + lib.optionalString isRetro68 " -DTARGET_API_MAC_OSX=0 -DTARGET_API_MAC_CARBON=1 -DBuildingMoreFilesXForMacOS9";
 
   configureFlags =
     [

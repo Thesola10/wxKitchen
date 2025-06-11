@@ -11,28 +11,36 @@
   outputs = { self, nixpkgs, flake-utils, retro68, ... }:
   flake-utils.lib.eachDefaultSystem (system:
   let
-    overlays =
-    [ # for some reason even 'super' nets me an infinite recursion, so evaluate nixpkgs twice
-      (import ./overlay.nix { pkgsRetro68 = retro68.legacyPackages.${system}.pkgsCross.carbon.retro68; })
-    ];
-
     retro68Platforms = (import "${retro68}/nix/platforms.nix");
 
     platforms = {
-      "ppc-macos" = retro68Platforms.carbon;
-      "i686-mingw32" = pkgs.pkgsCross.mingw32.stdenv.hostPlatform;
+      "ppc-macos" = {
+        crossSystem = retro68Platforms.carbon;
+        overlays = [
+          retro68.overlays.default
+          (import ./overlays/macos.nix {
+            pkgsRetro68 = retro68.legacyPackages.${system}.pkgsCross.carbon.retro68;
+          })
+          (import ./overlays/all.nix)
+        ];
+      };
+      "i686-mingw32" = {
+        crossSystem = pkgs.pkgsCross.mingw32.stdenv.hostPlatform;
+        overlays = [
+          (import ./overlays/mingw32.nix)
+          (import ./overlays/all.nix)
+        ];
+      };
     };
 
-    makePkgsCross = crossSystem: import nixpkgs {
-      inherit system crossSystem;
-      overlays = (
-        if (crossSystem.retro68 or false) then [ retro68.overlays.default ] else []
-      ) ++ overlays;
+    makePkgsCross = platform: import nixpkgs {
+      inherit system;
+      inherit (platform) crossSystem overlays;
       config.allowUnsupportedSystem = true;
     };
 
     pkgs = import nixpkgs {
-      inherit system overlays;
+      inherit system;
     };
   in {
     legacyPackages = pkgs;
@@ -43,6 +51,19 @@
       (l: r: l // {
         "demo-${r}" = (makePkgsCross platforms.${r}).wxkitchen-demo;
         "c-demo-${r}" = (makePkgsCross platforms.${r}).wxkitchen-c-demo;
+      }) {} (builtins.attrNames platforms);
+
+    devShells = builtins.foldl'
+      (l: r: l // {
+        "wxWidgets-${r}" = (makePkgsCross platforms.${r}).buildWxApp {
+          name = "wxKitchen-shell";
+          src = pkgs.emptyDirectory;
+        };
+        "wxc-${r}" = (makePkgsCross platforms.${r}).buildWxApp {
+          name = "wxKitchen-shell-with-wxc";
+          src = pkgs.emptyDirectory;
+          withWxc = true;
+        };
       }) {} (builtins.attrNames platforms);
   });
 }
