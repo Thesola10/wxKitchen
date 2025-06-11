@@ -58,10 +58,12 @@ in stdenv.mkDerivation rec {
   # This is how you know this software is very obsolete
   hardeningDisable = [ "all" ];
 
-  CFLAGS = "-D_mkdir=mkdir -D_rmdir=rmdir -fpermissive -Wno-error=narrowing"
-         + lib.optionalString isRetro68 " -D__WXMAC_OSX__";
-  CXXFLAGS = "-D_mkdir=mkdir -D_rmdir=rmdir -fpermissive -Wno-error=narrowing"
-           + lib.optionalString isRetro68 " -D__WXMAC_OSX__";
+  CFLAGS = "-fpermissive -Wno-error=narrowing"
+         + lib.optionalString stdenv.hostPlatform.isWindows " -D_mkdir=mkdir -D_rmdir=rmdir"
+         + lib.optionalString isRetro68 " -DTARGET_API_MAC_OSX=0 -DTARGET_API_MAC_CARBON=1 -DPRAGMA_ONCE=0";
+  CXXFLAGS = "-fpermissive -Wno-error=narrowing"
+           + lib.optionalString stdenv.hostPlatform.isWindows " -D_mkdir=mkdir -D_rmdir=rmdir"
+           + lib.optionalString isRetro68 " -DTARGET_API_MAC_OSX=0 -DTARGET_API_MAC_CARBON=1 -DPRAGMA_ONCE=0";
 
   configureFlags =
     [
@@ -75,6 +77,7 @@ in stdenv.mkDerivation rec {
       "--disable-precomp-headers"
       "--with-libpng"
       "--with-libjpeg"
+#      "--with-flavour=wxKitchen"
       "--without-libtiff"
     ] ++ lib.optional isRetro68 [
       "--without-regex"

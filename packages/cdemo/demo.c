@@ -32,7 +32,7 @@ void app_main(void *dat)
 
     wxEvtHandler_Connect((wxEvtHandler *) fr, 12, 12, expEVT_COMMAND_BUTTON_CLICKED(), evt);
 
-    wxWindow_SetSizer((wxWindow *)pan, (wxSizer *) parent);
+    wxWindow_SetSizer((wxWindow *) pan, (wxSizer *) parent);
 
     wxWindow_Show((wxWindow *) fr);
     ELJApp_SetTopWindow((wxWindow *) fr);

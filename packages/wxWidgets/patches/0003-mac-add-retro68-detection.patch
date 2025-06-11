@@ -1,3 +1,25 @@
+diff --git a/src/mac/carbon/textctrl.cpp b/src/mac/carbon/textctrl.cpp
+index d116f73..1fd6446 100644
+--- a/src/mac/carbon/textctrl.cpp
++++ b/src/mac/carbon/textctrl.cpp
+@@ -18,7 +18,7 @@
+ #if wxUSE_TEXTCTRL
+ 
+ 
+-#ifdef __DARWIN__
++#if defined(__DARWIN__) || defined(Macintosh)
+   #include <sys/types.h>
+   #include <sys/stat.h>
+ #else
+@@ -63,7 +63,7 @@
+ #define wxMAC_AWAYS_USE_MLTE 1
+ #endif
+ 
+-#ifndef __WXMAC_OSX__
++#if !(defined(__WXMAC_OSX__) || defined(Macintosh))
+ enum
+ {
+     kTXNVisibilityTag             = 'visb' /*set the visibility state of the object  */
 diff --git a/src/common/file.cpp b/src/common/file.cpp
 index ae71d0e..857c829 100644
 --- a/src/common/file.cpp
@@ -80,7 +102,7 @@ index df3f235..085e7a3 100644
 +#if !defined(__MWERKS__) && !defined(__UNIX__) && !defined(Macintosh)
  typedef   unsigned int  size_t;
  #endif
-
+ 
 diff --git a/src/mac/carbon/app.cpp b/src/mac/carbon/app.cpp
 index 703f001..d679366 100644
 --- a/src/mac/carbon/app.cpp
@@ -96,55 +118,3 @@ index 703f001..d679366 100644
  #ifndef __DARWIN__
    #if __option(profile)
      #include <profiler.h>
-diff --git a/src/mac/carbon/display.cpp b/src/mac/carbon/display.cpp
-index 7dc8cf8..b7646eb 100644
---- a/src/mac/carbon/display.cpp
-+++ b/src/mac/carbon/display.cpp
-@@ -28,7 +28,7 @@
-    #include "wx/msgdlg.h"
- #endif
- 
--#ifdef __DARWIN__
-+#if defined(__DARWIN__) || defined(Macintosh)
-     #include <Carbon/Carbon.h>
- #else
-     #include <Gestalt.h>
-diff --git a/src/mac/carbon/textctrl.cpp b/src/mac/carbon/textctrl.cpp
-index d116f73..3798346 100644
---- a/src/mac/carbon/textctrl.cpp
-+++ b/src/mac/carbon/textctrl.cpp
-@@ -18,7 +18,7 @@
- #if wxUSE_TEXTCTRL
- 
- 
--#ifdef __DARWIN__
-+#if defined(__DARWIN__) || defined(Macintosh)
-   #include <sys/types.h>
-   #include <sys/stat.h>
- #else
-diff --git a/src/generic/helpext.cpp b/src/generic/helpext.cpp
-index 90bbedc..d608064 100644
---- a/src/generic/helpext.cpp
-+++ b/src/generic/helpext.cpp
-@@ -155,7 +155,7 @@ wxExtHelpController::DisplayHelp(const wxString &relativeURL)
- #else // UNIX
-    wxString command;
- 
--#ifndef __EMX__
-+#if !(defined(__EMX__) || defined(Macintosh))
-    if(m_BrowserIsNetscape) // try re-loading first
-    {
-       wxString lockfile;
-diff --git a/src/mac/carbon/sound.cpp b/src/mac/carbon/sound.cpp
-index b63f963..783695b 100644
---- a/src/mac/carbon/sound.cpp
-+++ b/src/mac/carbon/sound.cpp
-@@ -45,7 +45,7 @@
- 
- #ifdef __WXMAC__
- #include "wx/mac/uma.h"
--#ifndef __DARWIN__
-+#if !(defined(__DARWIN__) || defined(Macintosh))
- #include <Movies.h>
- #include <Gestalt.h>
- #endif
