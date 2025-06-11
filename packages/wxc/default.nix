@@ -26,6 +26,10 @@ in stdenv.mkDerivation rec {
     wxWidgets
   ];
 
+  patches = [
+    ./c-typed-interface.patch
+  ];
+
   hardeningDisable = [ "all" ];
 
   configurePhase = ''
@@ -39,6 +43,8 @@ in stdenv.mkDerivation rec {
   installPhase = ''
     cp -r out/bindist/wxhaskell-${version} $out
     cp -r wxc/include $out/include
+
+    $CXX -dM -E -x c++ `cat ${wxWidgets}/nix-support/libcxx-cxxflags` -include ${wxWidgets}/include/wx/wx.h - </dev/null |grep -E 'wx[A-Z0-9_]+ ' > $out/include/wx_constants.h
     cd $out/lib
     ln -s libwxc-*.a libwxc.a
   '';

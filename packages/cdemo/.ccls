@@ -1,0 +1,2 @@
+gcc
+-I/nix/store/20vf10kqa5dnp0f68q82hwnnbbzhbnzr-wxc-i686-w64-mingw32-0.9.4/include

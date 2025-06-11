@@ -1,0 +1,46 @@
+diff --git a/wxc/include/ewxw/wxc_types.h b/wxc/include/ewxw/wxc_types.h
+index 81c5c9b..dd80933 100644
+--- a/wxc/include/ewxw/wxc_types.h
++++ b/wxc/include/ewxw/wxc_types.h
+@@ -57,11 +57,18 @@
+ #ifdef WXC_USE_TYPED_INTERFACE
+ # define TClass(tp)     tp*
+ # define TBool          bool
+-# define TClosureFun    ClosureFun
++# define TClosureFun(x) ClosureFun x
++#elif !defined(__cplusplus)
++# include <stdbool.h>
++# define TClassDef(tp)  typedef struct _##tp tp;
++# define TClassDefExtend(tp,parent) typedef struct _##tp tp;
++# define TClass(tp)     struct _##tp *
++# define TBool          bool
++# define TClosureFun(x) void (*x)(void *data)
+ #else
+ # define TClass(tp)     void*
+ # define TBool          int
+-# define TClosureFun    void*
++# define TClosureFun(x) void* x
+ #endif
+ 
+ /* basic types */
+diff --git a/wxc/include/wxc.h b/wxc/include/wxc.h
+index 5928c0d..4a803e7 100644
+--- a/wxc/include/wxc.h
++++ b/wxc/include/wxc.h
+@@ -12,6 +12,7 @@
+ /*-----------------------------------------------------------------------------
+   Standard includes
+ -----------------------------------------------------------------------------*/
++#include "wx_constants.h"
+ #include "ewxw/wxc_types.h"
+ #include "ewxw/wxc_glue.h"
+ 
+@@ -33,7 +34,7 @@
+ 
+ /* wxClosure */
+ TClassDefExtend(wxClosure,wxObject)
+-TClass(wxClosure)  wxClosure_Create( TClosureFun _fun_CEvent, void* _data );
++TClass(wxClosure)  wxClosure_Create( TClosureFun(_fun_CEvent), void* _data );
+ void*              wxClosure_GetData( TSelf(wxClosure) _obj );
+ 
+ TClass(wxClosure)  wxEvtHandler_GetClosure( TSelf(wxEvtHandler) _obj, int id, int type );
