@@ -21,6 +21,8 @@ void app_main(void *dat)
     bt = wxButton_Create((wxWindow *) pan, 12, "Nice", 40, 40, 100, 20, wxBU_EXACTFIT);
     evt = wxClosure_Create(btnClicked, NULL);
 
+    wxBoxSizer_Create(wxVERTICAL);
+
     wxEvtHandler_Connect((wxEvtHandler *) fr, 12, 12, expEVT_COMMAND_BUTTON_CLICKED(), evt);
 
     wxWindow_Show((wxWindow *) fr);
