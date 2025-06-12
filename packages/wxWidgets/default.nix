@@ -6,6 +6,10 @@
   zlib,
   pcre2,
   pkg-config,
+  buildPackages,
+
+  retro68 ? null,
+
   unicode ? true,
   withMac ? stdenv.hostPlatform.retro68 or false,
   withMSW ? stdenv.hostPlatform.isWindows
@@ -68,6 +72,25 @@ in stdenv.mkDerivation rec {
 
   LDFLAGS = lib.optionalString isRetro68 "-lCarbonFrameworkLib";
 
+  REZ = lib.optionalString isRetro68 "${retro68.tools}/bin/Rez";
+  SETFILE = lib.optionalString isRetro68
+  (buildPackages.writeShellScript "SetFile"
+  ''
+  TYPE=APPL
+  if [[ $1 == '-t' ]]
+  then
+    TYPE="$2"
+    shift 2
+  fi
+
+  ${retro68.tools}/bin/MakePEF $1 -o $1.pef
+  ${retro68.tools}/bin/Rez -I ${retro68.universal}/RIncludes ${retro68.libretro}/RIncludes/RetroCarbonAPPL.r -DCFRAG_NAME="\"$(basename $1)\"" --data $1.pef -o $1.bin -t $TYPE -c ro68
+  '');
+
+  postPatch = ''
+    cat ${././mac-missing-glue.c} >> src/mac/carbon/utils.cpp
+  '';
+
   configureFlags =
     [
       "--disable-shared"
@@ -80,7 +103,7 @@ in stdenv.mkDerivation rec {
       "--disable-precomp-headers"
       "--with-libpng"
       "--with-libjpeg"
-#      "--with-flavour=wxKitchen"
+      "--with-flavour=wxKitchen"
       "--without-libtiff"
     ] ++ lib.optional isRetro68 [
       "--without-regex"
@@ -98,6 +121,10 @@ in stdenv.mkDerivation rec {
     $out/bin/wx-config --cxxflags > $out/nix-support/libcxx-cxxflags
     $out/bin/wx-config --libs > $out/nix-support/cc-ldflags
     echo "-L${libjpeg_original}/lib -L${zlib}/lib" >> $out/nix-support/cc-ldflags
+  '' + lib.optionalString isRetro68 ''
+    echo "-DTARGET_API_MAC_OSX=0 -DTARGET_CARBON=1 -DTARGET_API_MAC_CARBON=1" >> $out/nix-support/cc-cflags
+    echo "-DTARGET_API_MAC_OSX=0 -DTARGET_CARBON=1 -DTARGET_API_MAC_CARBON=1" >> $out/nix-support/libcxx-cxxflags
+    echo "-lCarbonFrameworkLib -lQuickTimeLib -lCarbonLib" >> $out/nix-support/cc-ldflags
   '';
 
   enableParallelBuilding = true;

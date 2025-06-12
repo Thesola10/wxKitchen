@@ -91,6 +91,8 @@ self: super: {
             ln -s . $out/include/Carbon
           '';
         };
+
+        tools = self.buildPackages.retro68.tools;
       })
     else super.retro68;
 

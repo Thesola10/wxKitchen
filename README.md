@@ -4,9 +4,11 @@ wxKitchen is a Nix flake intended to facilitate cross-compiling apps written wit
 
 ## Supported targets
 - Windows NT 4 and later (`pkgsCross.i686-mingw32`)
-- Mac OS 9 with Carbon (`pkgsCross.ppc-macos`) _(work in progress)_
+- Mac OS 9 with Carbon (`pkgsCross.ppc-macos`)¹
 - Palm OS _(planned)_
 - Linux 2.4 with GTK+ _(planned)_
+
+¹ _Functions `mkdir`, `rmdir`, `getcwd` and `chdir` have been removed pending a better solution._
 
 ## Getting started
 You can start by building the example projects provided.
