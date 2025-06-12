@@ -1,0 +1,19 @@
+diff --git a/src/mac/corefoundation/utilsexc_base.cpp b/src/mac/corefoundation/utilsexc_base.cpp
+index db2c9f3..734f631 100644
+--- a/src/mac/corefoundation/utilsexc_base.cpp
++++ b/src/mac/corefoundation/utilsexc_base.cpp
+@@ -31,8 +31,14 @@
+ #endif // WX_PRECOMP
+ 
+ // Mac Includes
++#ifdef __DARWIN__
+ #include <CoreFoundation/CoreFoundation.h>
+ #include <ApplicationServices/ApplicationServices.h>
++#else
++#include <CFBase.h>
++#include <CFURL.h>
++#include <ApplicationServices.h>
++#endif
+ 
+ // More WX Includes
+ #include "wx/filename.h"

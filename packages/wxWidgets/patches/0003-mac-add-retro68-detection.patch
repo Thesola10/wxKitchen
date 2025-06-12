@@ -11,15 +11,6 @@ index d116f73..1fd6446 100644
    #include <sys/types.h>
    #include <sys/stat.h>
  #else
-@@ -63,7 +63,7 @@
- #define wxMAC_AWAYS_USE_MLTE 1
- #endif
- 
--#ifndef __WXMAC_OSX__
-+#if !(defined(__WXMAC_OSX__) || defined(Macintosh))
- enum
- {
-     kTXNVisibilityTag             = 'visb' /*set the visibility state of the object  */
 diff --git a/src/common/file.cpp b/src/common/file.cpp
 index ae71d0e..857c829 100644
 --- a/src/common/file.cpp

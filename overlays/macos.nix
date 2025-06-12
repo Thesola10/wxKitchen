@@ -107,7 +107,7 @@ self: super: {
 
           echo "-L$out/lib" >> $out/nix-support/cc-ldflags
         '';
-        extraPackages = with pkgsRetro68; [
+        extraPackages = with self.retro68; [
           universal
           import_libraries
           libretro

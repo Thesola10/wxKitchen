@@ -1,0 +1,31 @@
+diff --git a/include/wx/mac/carbon/private.h b/include/wx/mac/carbon/private.h
+index 083f229..cc67fd3 100644
+--- a/include/wx/mac/carbon/private.h
++++ b/include/wx/mac/carbon/private.h
+@@ -32,6 +32,14 @@
+ #    include <CoreServices.h>
+ #endif
+ 
++#ifndef verify
++#define verify(x)  
++#endif
++
++#ifndef verify_noerr
++#define verify_noerr(x)  
++#endif
++
+ #if UNIVERSAL_INTERFACES_VERSION < 0x0342
+     #error "please update to Apple's lastest universal headers from http://developer.apple.com/sdk/"
+ #endif
+diff --git a/src/mac/carbon/morefilex/MoreFilesX.c b/src/mac/carbon/morefilex/MoreFilesX.c
+index 62a4953..9faa835 100644
+--- a/src/mac/carbon/morefilex/MoreFilesX.c
++++ b/src/mac/carbon/morefilex/MoreFilesX.c
+@@ -73,6 +73,7 @@
+	#include <Carbon/Carbon.h>
+	#include <string.h>
+ #else
++	#include <Debugging.h>
+	#include <Carbon.h>
+	#include <string.h>
+ #endif

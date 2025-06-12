@@ -52,6 +52,8 @@ in stdenv.mkDerivation rec {
       ./patches/0004-mac-add-missing-unistd-h.patch
       ./patches/0005-mac-fix-GetTempBuffer-declaration.patch
       ./patches/0006-mac-fix-return-types.patch
+      ./patches/0007-mac-define-verify-macros.patch
+      ./patches/0008-mac-fix-corefoundation-includes.patch
     ];
 
   # This is how you know this software is very obsolete
@@ -59,10 +61,12 @@ in stdenv.mkDerivation rec {
 
   CFLAGS = "-fpermissive -Wno-error=narrowing"
          + lib.optionalString stdenv.hostPlatform.isWindows " -D_mkdir=mkdir -D_rmdir=rmdir"
-         + lib.optionalString isRetro68 " -DTARGET_API_MAC_OSX=0 -DTARGET_API_MAC_CARBON=1 -DBuildingMoreFilesXForMacOS9";
+         + lib.optionalString isRetro68 " -DTARGET_API_MAC_OSX=0 -DTARGET_API_MAC_CARBON=1 -DBuildingMoreFilesXForMacOS9=1";
   CXXFLAGS = "-fpermissive -Wno-error=narrowing"
            + lib.optionalString stdenv.hostPlatform.isWindows " -D_mkdir=mkdir -D_rmdir=rmdir"
-           + lib.optionalString isRetro68 " -DTARGET_API_MAC_OSX=0 -DTARGET_API_MAC_CARBON=1 -DBuildingMoreFilesXForMacOS9";
+           + lib.optionalString isRetro68 " -DTARGET_API_MAC_OSX=0 -DTARGET_API_MAC_CARBON=1 -DBuildingMoreFilesXForMacOS9=1";
+
+  LDFLAGS = lib.optionalString isRetro68 "-lCarbonFrameworkLib";
 
   configureFlags =
     [
@@ -84,27 +88,27 @@ in stdenv.mkDerivation rec {
       ++ lib.optional withMac "--with-mac"
       ++ lib.optional unicode "--with-unicode";
 
-    postInstall = ''
-      pushd $out/include
-      ln -s wx-*/* .
-      popd
+  postInstall = ''
+    pushd $out/include
+    ln -s wx-*/* .
+    popd
 
-      mkdir -p $out/nix-support
-      $out/bin/wx-config --cflags > $out/nix-support/cc-cflags
-      $out/bin/wx-config --cxxflags > $out/nix-support/libcxx-cxxflags
-      $out/bin/wx-config --libs > $out/nix-support/cc-ldflags
-      echo "-L${libjpeg_original}/lib -L${zlib}/lib" >> $out/nix-support/cc-ldflags
-    '';
+    mkdir -p $out/nix-support
+    $out/bin/wx-config --cflags > $out/nix-support/cc-cflags
+    $out/bin/wx-config --cxxflags > $out/nix-support/libcxx-cxxflags
+    $out/bin/wx-config --libs > $out/nix-support/cc-ldflags
+    echo "-L${libjpeg_original}/lib -L${zlib}/lib" >> $out/nix-support/cc-ldflags
+  '';
 
-    enableParallelBuilding = true;
+  enableParallelBuilding = true;
 
-    passthru = {
-      inherit withMSW withMac unicode;
-    };
+  passthru = {
+    inherit withMSW withMac unicode;
+  };
 
-    meta = with lib; {
-      homepage = "https://www.wxwidgets.org/";
-      description = "Cross-Platform C++ GUI Library";
-      license = licenses.wxWindows;
-    };
+  meta = with lib; {
+    homepage = "https://www.wxwidgets.org/";
+    description = "Cross-Platform C++ GUI Library";
+    license = licenses.wxWindows;
+  };
 }
