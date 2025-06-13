@@ -1,9 +1,9 @@
 self: super: {
   windows =
-  let mingw_ver = "6.0.1";
+  let mingw_ver = "4.0.6";
       mingw_src = super.pkgsBuildBuild.fetchurl {
         url = "mirror://sourceforge/mingw-w64/mingw-w64-v${mingw_ver}.tar.bz2";
-        hash = "sha256-AZBbdG3NzXO7nA7kRjYmyJZB1VordD+7XbqUEuztP2Q=";
+        hash = "sha256-DEBzlLDYY1VT9PvKZ0zf5EaqwiPpC0AQYD2GPkvdAVw=";
       };
   in super.windows // {
     mingw_w64 = super.windows.mingw_w64.overrideAttrs
