@@ -1,5 +1,3 @@
-{ pkgsRetro68, pathToRetro68 }:
-
 self: super: {
 
   hfsfuse = super.stdenv.mkDerivation rec {
@@ -52,17 +50,25 @@ self: super: {
           hash = "sha256-irehExm4c9x5oGVz10lc1ijSSHqf1wEht6+z7OZ+ImY=";
         };
 
+        libretro = prev.libretro.overrideAttrs (prevAttrs: {
+          buildCommand = prevAttrs.buildCommand + ''
+            ln -s libretrocrt-carbon.a $out/lib/libretrocrt.a
+          '';
+        });
+
         universal = self.stdenvNoCC.mkDerivation {
           name = "retro68.universal";
           src = self.retro68.universalInterfaces_342;
-          nativeBuildInputs = with self.buildPackages.retro68; [
-            tools
-            binutils_unwrapped
-            self.buildPackages.hfsfuse
-            self.buildPackages.macb
+          nativeBuildInputs = with self.buildPackages; [
+            retro68.tools
+            retro68.binutils_unwrapped
+            hfsfuse
+            macb
           ];
 
-          buildCommand = ''
+          buildCommand = let
+            pathToRetro68 = super.buildPackages.retro68.monolithic.src;
+          in ''
             ConvertDiskImage $src decoded.dsk
             export HOME=.
             hfstar decoded.dsk - --rsrc-ext=.rsrc | tar -xf -
@@ -104,12 +110,9 @@ self: super: {
       (super.stdenv.cc.override (prev: {
         extraBuildCommands = ''
           mkdir -p $out/lib $out/include
-          ln -s ${pkgsRetro68.libretro}/lib/libretrocrt-carbon.a $out/lib/libretrocrt.a
           echo "-L${self.retro68.universal}/lib" >> $out/nix-support/cc-ldflags
           echo "-I${self.retro68.universal}/include" >> $out/nix-support/cc-cflags
           cp ${../extras/ansi_fp.h} $out/include/ansi_fp.h
-
-          echo "-L$out/lib" >> $out/nix-support/cc-ldflags
         '';
         extraPackages = with self.retro68; [
           universal

@@ -18,10 +18,7 @@
         crossSystem = retro68Platforms.carbon;
         overlays = [
           retro68.overlays.default
-          (import ./overlays/macos.nix {
-            pkgsRetro68 = retro68.legacyPackages.${system}.pkgsCross.carbon.retro68;
-            pathToRetro68 = retro68;
-          })
+          (import ./overlays/macos.nix)
           (import ./overlays/all.nix)
         ];
       };
