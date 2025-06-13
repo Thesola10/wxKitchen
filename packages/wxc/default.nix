@@ -31,6 +31,11 @@ in stdenv.mkDerivation rec {
 
   patches = [
     ./c-typed-interface.patch
+    ./sockets-conditional-include.patch
+  ] ++ lib.optionals (stdenv.hostPlatform ? retro68) [
+    ./mac-fix-darwin-detection.patch
+    ./mac-fix-wxcolour-return-type.patch
+    ./mac-build-static.patch
   ];
 
   hardeningDisable = [ "all" ];
@@ -40,7 +45,7 @@ in stdenv.mkDerivation rec {
   '';
 
   buildPhase = ''
-    make wxc-bindist
+    make wxc-bindist AR=$AR
   '';
 
   installPhase = ''

@@ -1,0 +1,44 @@
+diff --git a/configure b/configure
+index e1e4027..8b6a146 100755
+--- a/configure
++++ b/configure
+@@ -222,10 +222,8 @@ if findprogram "$wxconfig"; then
+     dll=".dll"
+     lib=""
+   else if test "$wxtoolkit" = "mac"; then
+-    dll=".dylib"
++    dll=".a"
+     lib="lib"
+-    # use a standard prefix on MacOS X for the installer
+-    prefix="/usr/local/wxhaskell"
+   fi
+   fi
+ 
+@@ -800,7 +798,7 @@ USERNAME=$username
+ INSTALL=$install
+ INSTALLDIR=$installdir
+ LD=ld
+-AR=ar
++AR:=ar
+ CP=cp -f
+ MV=mv
+ CD=cd
+diff --git a/makefile b/makefile
+index 249689b..9842d95 100644
+--- a/makefile
++++ b/makefile
+@@ -713,11 +713,9 @@ endif
+ $(basename $(WXC-LIB)).so: $(WXC-OBJS)
+ 	$(CXX) -shared -o $@ $^ $(WXC-LIBS) -Wl --soname=$(SHARED-PREFIX)$(notdir $@)
+ 
+-# dynamic link library on macOSX: generates single .so file
+-$(basename $(WXC-LIB)).dylib: $(WXC-OBJS)
+-	$(CXX) -r -keep_private_externs -nostdlib -o $(WXC-OUTDIR)/master.o $^ $(WXC-LIBS)
+-	$(CXX) -dynamiclib -install_name $(SHARED-PREFIX)$(notdir $@) -undefined suppress -flat_namespace -o $@ $(WXC-OUTDIR)/master.o $(filter-out %.a,$(WXC-LIBS))
+-	$(RM) -f $(WXC-OUTDIR)/master.o
++# static library in wxKitchen: generates single .a file
++$(basename $(WXC-LIB)).a: $(WXC-OBJS)
++	$(AR) rcs $@ $^
+ 	
+ # create an object file from source files
+ $(WXC-OBJS): $(WXC-OUTDIR)/%.o: $(WXC-SRCDIR)/%.cpp

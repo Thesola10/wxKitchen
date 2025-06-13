@@ -42,6 +42,7 @@ stdenv.mkDerivation (args // {
   NIX_CFLAGS_COMPILE = (lib.readFile "${wxWidgets}/nix-support/cc-cflags")
                      + lib.optionalString withWxc "-I${wxc}/include";
   NIX_CXXFLAGS_COMPILE = lib.readFile "${wxWidgets}/nix-support/libcxx-cxxflags";
-  NIX_CFLAGS_LINK = (lib.readFile "${wxWidgets}/nix-support/cc-ldflags")
-                  + lib.optionalString withWxc "-L${wxc}/lib -lwxc";
+  NIX_CFLAGS_LINK = lib.optionalString withWxc "-L${wxc}/lib -lwxc "
+                  + (lib.readFile "${wxWidgets}/nix-support/cc-ldflags")
+                  + " -lstdc++";
 })

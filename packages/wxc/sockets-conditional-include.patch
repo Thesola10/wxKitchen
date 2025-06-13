@@ -1,0 +1,60 @@
+diff --git a/wxc/include/wrapper.h b/wxc/include/wrapper.h
+index 8470093..b26063d 100644
+--- a/wxc/include/wrapper.h
++++ b/wxc/include/wrapper.h
+@@ -271,7 +271,7 @@ class ELJTextValidator : public wxTextValidator
+                 void*        obj;
+                 ValidateFunc fnc;
+ };
+-
++#if wxUSE_SOCKETS
+ class ELJConnection : public wxTCPConnection
+ {
+         private:
+@@ -385,7 +385,7 @@ class ELJClient : public wxTCPClient
+                         return result;
+                 };
+ };
+-
++#endif // wxUSE_SOCKETS
+ class ELJPrintout : public wxPrintout
+ {
+         private:
+diff --git a/wxc/src/extra.cpp b/wxc/src/extra.cpp
+index db4ccf9..6cc371e 100644
+--- a/wxc/src/extra.cpp
++++ b/wxc/src/extra.cpp
+@@ -153,6 +153,7 @@ void wxTimerEx::Notify()
+ /*-----------------------------------------------------------------------------
+   wxInputSink wrapper: adds non-blocking event driven input channel
+ -----------------------------------------------------------------------------*/
++#if wxUSE_THREAD
+ class wxInputSink;
+ 
+ class wxInputSinkEvent : public wxEvent
+@@ -309,7 +310,7 @@ void wxInputSinkEvent::Read( wxInputStream* input )
+   /* add zero terminator */
+   m_buffer[m_lastRead] = 0;
+ }
+-
++#endif //wxUSE_THREAD
+ 
+ /*-----------------------------------------------------------------------------
+   wxHtmlWindow wrapper: adds normal events instead of using inheritance
+@@ -1939,6 +1940,7 @@ EWXWEXPORT(void, wxcEndBusyCursor)(void)
+ /*-----------------------------------------------------------------------------
+   wxInputSink
+ -----------------------------------------------------------------------------*/
++#if wxUSE_THREAD
+ EWXWEXPORT(wxInputSink*, wxInputSink_Create)( wxInputStream* input, wxEvtHandler* evtHandler, int bufferLen )
+ {
+   return new wxInputSink(input,evtHandler,bufferLen);
+@@ -1969,7 +1971,7 @@ EWXWEXPORT(char*, wxInputSinkEvent_LastInput)( wxInputSinkEvent* obj )
+ {
+   return obj->LastInput();
+ }
+-
++#endif //wxUSE_THREAD
+ 
+ /*-----------------------------------------------------------------------------
+   html window

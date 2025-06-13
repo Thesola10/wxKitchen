@@ -1,0 +1,16 @@
+diff --git a/wxc/src/ewxw/eljcolour.cpp b/wxc/src/ewxw/eljcolour.cpp
+index d4408af..146c3c4 100644
+--- a/wxc/src/ewxw/eljcolour.cpp
++++ b/wxc/src/ewxw/eljcolour.cpp
+@@ -76,7 +76,11 @@ EWXWEXPORT(char, wxColour_Blue)(void* _obj)
+ 	return ((wxColour*)_obj)->Blue();
+ }
+ 	
++#if __WXMAC__
++EWXWEXPORT(const unsigned char *, wxColour_GetPixel)(void *_obj)
++#else
+ EWXWEXPORT(int, wxColour_GetPixel)(void* _obj)
++#endif
+ {
+ 	return ((wxColour*)_obj)->GetPixel();
+ }

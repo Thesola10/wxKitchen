@@ -1,0 +1,13 @@
+diff --git a/wxc/src/apppath.cpp b/wxc/src/apppath.cpp
+index 5863c9e..793a785 100644
+--- a/wxc/src/apppath.cpp
++++ b/wxc/src/apppath.cpp
+@@ -30,7 +30,7 @@ wxString GetApplicationPath()
+ #else
+     wxString argv0;
+ 
+-# ifdef __WXMAC__		
++# ifdef __DARWIN__		
+     if (NSIsSymbolNameDefined("__NSGetExecutablePath"))
+     {
+       char buf[512];
