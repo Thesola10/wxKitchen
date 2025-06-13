@@ -88,7 +88,7 @@ in stdenv.mkDerivation rec {
   '');
 
   postPatch = ''
-    cat ${././mac-missing-glue.c} >> src/mac/carbon/utils.cpp
+    cat ${./mac-missing-glue.c} >> src/mac/carbon/utils.cpp
   '';
 
   configureFlags =
@@ -122,6 +122,9 @@ in stdenv.mkDerivation rec {
     $out/bin/wx-config --libs > $out/nix-support/cc-ldflags
     echo "-L${libjpeg_original}/lib -L${zlib}/lib" >> $out/nix-support/cc-ldflags
   '' + lib.optionalString isRetro68 ''
+    $CC -E -P -I ${retro68.universal}/RIncludes - < src/mac/carbon/corersrc.r > corersrc.full.r
+    ${retro68.tools}/bin/Rez corersrc.full.r -o $out/lib/libwx_base_carbon.bin
+
     echo "-DTARGET_API_MAC_OSX=0 -DTARGET_CARBON=1 -DTARGET_API_MAC_CARBON=1" >> $out/nix-support/cc-cflags
     echo "-DTARGET_API_MAC_OSX=0 -DTARGET_CARBON=1 -DTARGET_API_MAC_CARBON=1" >> $out/nix-support/libcxx-cxxflags
     echo "-lCarbonFrameworkLib -lQuickTimeLib -lCarbonLib" >> $out/nix-support/cc-ldflags

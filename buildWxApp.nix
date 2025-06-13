@@ -33,7 +33,9 @@ stdenv.mkDerivation (args // {
       MakePEF $file -o $file.pef
       Rez -I ${retro68.universal}/RIncludes \
           ${retro68.libretro}/RIncludes/RetroCarbonAPPL.r \
-          -DCFRAG_NAME="\"$(basename $file)\"" --data $file.pef -o $file.bin -t APPL -c ro68
+          --copy ${wxWidgets}/lib/libwx_base_carbon.bin \
+          -DCFRAG_NAME="\"$(basename $file)\"" --data $file.pef \
+          -o $file.bin -t APPL -c ro68
     done
   '' + postInstall;
 
