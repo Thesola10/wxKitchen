@@ -88,6 +88,8 @@ self: super: {
 
             patch $out/include/OpenTransport.h < ${../extras/mac-universal-fix-macro-conflict.patch}
 
+            patch -p1 -d $out/RIncludes < ${../extras/mac-universal-fix-rez-syntax.patch}
+
             ln -s . $out/include/Carbon
           '';
         };

@@ -1,0 +1,31 @@
+--- a/Components.r	1970-01-01 01:00:01.000000000 +0100
++++ b/Components.r	2025-06-13 22:44:19.583062255 +0200
+@@ -134,7 +134,7 @@
+ /*----------------------------dlle ¥ dlle resource--------------------------------*/
+ // used for multi-platform things
+ type 'dlle' {
+- cstring;
++ string;
+ };
+ 
+ /*-----------------------thnr ¥ a Components public resource map ------------------*/
+--- a/OSUtils.r	1970-01-01 01:00:01.000000000 +0100
++++ b/OSUtils.r	2025-06-13 22:46:52.929842272 +0200
+@@ -67,7 +67,7 @@
+             integer = $$CountOf(KeyArray) - 1;
+             wide array KeyArray {
+                 byte;                                           /* mask                 */
+-                boolean             or, and;
++                boolean;
+                 bitstring[7];                                   /* keyCode              */
+                 integer;                                        /* dv                   */
+                 integer;                                        /* dh                   */
+@@ -110,7 +110,7 @@
+         integer = $$CountOf(ExceptionArray);
+         wide array ExceptionArray {
+             byte;                                               /* Raw keycode          */
+-            boolean         noXor, Xor;
++            boolean =       noXor, Xor;
+             fill bit[3];
+             bitstring[4];                                       /* ADB op               */
+             pstring;
