@@ -7,10 +7,17 @@
 }:
 
 {
-  withWxc ? false,
   buildInputs ? [],
   nativeBuildInputs ? [],
   postInstall ? "",
+
+  # Whether to link against the wxc C bindings library for wxWidgets.
+  withWxc ? false,
+  
+  # In kilobytes, the size of the two predefined heap blocks.
+  # Mac Classic apps need to specify their heap size in advance, so
+  # try increasing this if your app crashes on Mac OS 9 but not OS X.
+  reservedMemoryMacOS ? 2048,
   ...
 }@args:
 
@@ -34,6 +41,7 @@ stdenv.mkDerivation (args // {
       Rez -I ${retro68.universal}/RIncludes \
           ${retro68.libretro}/RIncludes/RetroCarbonAPPL.r \
           --copy ${wxWidgets}/lib/libwx_base_carbon.bin \
+          -DMEMORY_RESERVED_KB=${toString reservedMemoryMacOS} \
           -DCFRAG_NAME="\"$(basename $file)\"" --data $file.pef \
           -o $file.bin -t APPL -c ro68
     done

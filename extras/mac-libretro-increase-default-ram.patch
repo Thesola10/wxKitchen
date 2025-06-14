@@ -1,0 +1,22 @@
+--- a/RetroCarbonAPPL.r	1970-01-01 01:00:01.000000000 +0100
++++ b/RetroCarbonAPPL.r	2025-06-14 11:54:57.189453404 +0200
+@@ -5,6 +5,10 @@
+ #define CFRAG_NAME "RetroPPC Application"
+ #endif
+ 
++#ifndef MEMORY_RESERVED_KB
++#define MEMORY_RESERVED_KB 2048
++#endif
++
+ resource 'cfrg' (0) {
+ 	{
+ 		kPowerPCCFragArch, kIsCompleteCFrag, kNoVersionNum, kNoVersionNum,
+@@ -37,6 +41,6 @@
+ 	reserved,
+ 	reserved,
+ 	reserved,
+-	1024 * 1024,
+-	1024 * 1024
++	MEMORY_RESERVED_KB * 1024,
++	MEMORY_RESERVED_KB * 1024
+ };

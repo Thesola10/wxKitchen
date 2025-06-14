@@ -52,6 +52,7 @@ self: super: {
 
         libretro = prev.libretro.overrideAttrs (prevAttrs: {
           buildCommand = prevAttrs.buildCommand + ''
+            patch $out/RIncludes/RetroCarbonAPPL.r < ${../extras/mac-libretro-increase-default-ram.patch}
             ln -s libretrocrt-carbon.a $out/lib/libretrocrt.a
           '';
         });
