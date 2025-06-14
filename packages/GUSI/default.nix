@@ -16,6 +16,11 @@ stdenv.mkDerivation {
 
   nativeBuildInputs = with pkgsBuildBuild; [
     unar
+    dos2unix
+  ];
+
+  patches = [
+    ./cpp-fixes.patch
   ];
 
   unpackPhase = ''
@@ -28,8 +33,17 @@ stdenv.mkDerivation {
        include/machine/ansi.h include/machine/endian.h include/signal.h \
        include/sys/cdefs.h include/sys/errno.h include/sys/signal.h \
        include/sys/stat.h include/sys/time.h include/sys/types.h \
-       include/sys/unistd.h include/unistd.h include/utime.h \
-       include/**/*.rsrc
+       include/sys/unistd.h include/unistd.h include/utime.h
+
+    mac2unix include/*.h
+    mac2unix src/tangled/*.cp
+  '';
+
+  buildPhase = ''
+    for file in src/tangled/*.cp
+    do
+      $CXX -Iinclude -DGUSI_COMPILER_HAS_NAMESPACE -c $file -o $file.o
+    done
   '';
 
   installPhase = ''
@@ -42,6 +56,6 @@ stdenv.mkDerivation {
 
     cp -r include $out/include
 
-    $AR rcs $out/lib/libGUSI.a lib/*.o
+    $AR rcs $out/lib/libGUSI.a src/tangled/*.o
   '';
 }
