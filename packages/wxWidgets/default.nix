@@ -118,8 +118,6 @@ in stdenv.mkDerivation rec {
     ln -s wx-*/* .
     popd
 
-    cp include/MacHeaders.c $out/lib/wx/include/*/
-
     mkdir -p $out/nix-support
     $out/bin/wx-config --cflags > $out/nix-support/cc-cflags
     $out/bin/wx-config --cxxflags > $out/nix-support/libcxx-cxxflags
@@ -128,6 +126,8 @@ in stdenv.mkDerivation rec {
   '' + lib.optionalString isRetro68 ''
     $CC -E -P -I ${retro68.universal}/RIncludes - < src/mac/carbon/corersrc.r > corersrc.full.r
     ${retro68.tools}/bin/Rez corersrc.full.r -o $out/lib/libwx_base_carbon.bin
+
+    cp include/MacHeaders.c $out/lib/wx/include/*/
 
     echo "-DTARGET_API_MAC_OSX=0 -DTARGET_CARBON=1 -DTARGET_API_MAC_CARBON=1" >> $out/nix-support/cc-cflags
     echo "-DTARGET_API_MAC_OSX=0 -DTARGET_CARBON=1 -DTARGET_API_MAC_CARBON=1" >> $out/nix-support/libcxx-cxxflags
