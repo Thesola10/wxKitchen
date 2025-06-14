@@ -91,6 +91,7 @@ in stdenv.mkDerivation rec {
   postPatch = lib.optionalString isRetro68 ''
     cat ${./mac-missing-glue.c} >> src/mac/carbon/utils.cpp
     sed -ie 's/wxUSE_SOCKETS=no/wxUSE_SOCKETS=yes/g' configure
+    sed -ie 's/wxUSE_THREADS=no/wxUSE_THREADS=yes/g' configure
   '';
 
   configureFlags =
