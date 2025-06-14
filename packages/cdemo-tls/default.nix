@@ -3,8 +3,7 @@
   lib,
   buildWxApp,
   wxWidgets,
-  cryanc,
-  GUSI
+  cryanc
 }:
 
 let
@@ -19,14 +18,10 @@ in buildWxApp rec {
 
   buildInputs = [
     cryanc
-  ] ++ lib.optionals (stdenv.hostPlatform ? retro68) [
-    GUSI
   ];
 
-  NIX_CFLAGS_COMPILE = "-I${cryanc}/include"
-                     + lib.optionalString (stdenv.hostPlatform ? retro68) "-I${GUSI}/include";
-  NIX_CFLAGS_LINK = "-L${cryanc}/lib -lcryanc "
-                  + lib.optionalString (stdenv.hostPlatform ? retro68) "-L${GUSI}/lib -lGUSI";
+  NIX_CFLAGS_COMPILE = "-I${cryanc}/include";
+  NIX_CFLAGS_LINK = "-L${cryanc}/lib -lcryanc";
 
   buildPhase = ''
     mkdir -p $out/bin
