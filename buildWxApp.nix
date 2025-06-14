@@ -13,7 +13,7 @@
 
   # Whether to link against the wxc C bindings library for wxWidgets.
   withWxc ? false,
-  
+
   # In kilobytes, the size of the two predefined heap blocks.
   # Mac Classic apps need to specify their heap size in advance, so
   # try increasing this if your app crashes on Mac OS 9 but not OS X.

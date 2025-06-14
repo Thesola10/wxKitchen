@@ -7,7 +7,7 @@ index 71abcfc..8430a44 100644
  #    endif
  
 -#else   /* Windows */
-+#elif defined(__WIN32__)   /* Windows */
++#elif defined(_WIN32)   /* Windows */
  #    ifndef __WINDOWS__
  #        define __WINDOWS__
  #    endif  /* Windows */
