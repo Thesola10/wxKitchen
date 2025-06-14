@@ -58,6 +58,7 @@ in stdenv.mkDerivation rec {
       ./patches/0006-mac-fix-return-types.patch
       ./patches/0007-mac-define-verify-macros.patch
       ./patches/0008-mac-fix-corefoundation-includes.patch
+      ./patches/0009-mac-fix-gsocket-includes.patch
     ];
 
   # This is how you know this software is very obsolete
@@ -87,8 +88,9 @@ in stdenv.mkDerivation rec {
   ${retro68.tools}/bin/Rez -I ${retro68.universal}/RIncludes ${retro68.libretro}/RIncludes/RetroCarbonAPPL.r -DCFRAG_NAME="\"$(basename $1)\"" --data $1.pef -o $1.bin -t $TYPE -c ro68
   '');
 
-  postPatch = ''
+  postPatch = lib.optionalString isRetro68 ''
     cat ${./mac-missing-glue.c} >> src/mac/carbon/utils.cpp
+    sed -ie 's/wxUSE_SOCKETS=no/wxUSE_SOCKETS=yes/g' configure
   '';
 
   configureFlags =
@@ -115,6 +117,8 @@ in stdenv.mkDerivation rec {
     pushd $out/include
     ln -s wx-*/* .
     popd
+
+    cp include/MacHeaders.c $out/lib/wx/include/*/
 
     mkdir -p $out/nix-support
     $out/bin/wx-config --cflags > $out/nix-support/cc-cflags

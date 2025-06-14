@@ -58,4 +58,18 @@ stdenv.mkDerivation {
 
     $AR rcs $out/lib/libGUSI.a src/tangled/*.o
   '';
+
+  meta = {
+    broken = throw ''Work in progress!
+
+      While GUSI does provide COFF binaries which Retro68 can theoretically
+      understand, in their current state (likely intended for MrC quirks)
+      ld segfaults.
+
+      This package is now focused on building from source. See this page to
+      lift the warning and try to scale the mountain of compile errors:
+
+        https://nixos.org/manual/nixpkgs/stable/#sec-allow-broken
+    '';
+  };
 }

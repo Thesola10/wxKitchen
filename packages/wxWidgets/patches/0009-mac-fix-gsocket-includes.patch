@@ -1,0 +1,9 @@
+diff --git a/include/MacHeaders.c b/include/MacHeaders.c
+new file mode 100644
+index 0000000..05c1cc6
+--- /dev/null
++++ b/include/MacHeaders.c
+@@ -0,0 +1,3 @@
++#include <wx/mac/carbon/macnotfy.h>
++
++#include <Timer.h>

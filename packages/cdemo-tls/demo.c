@@ -8,6 +8,7 @@ TClass(wxClosure) closure;
 void btnClicked(void *evt)
 {
     tls_init();
+
     ELJApp_Exit();
 }
 
