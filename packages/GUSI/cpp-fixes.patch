@@ -1,0 +1,103 @@
+diff -ur GUSI_223/include/GUSIBasics.h GUSI_223_patched/include/GUSIBasics.h
+--- GUSI_223/include/GUSIBasics.h	2025-06-14 17:51:54.508863081 +0200
++++ GUSI_223_patched/include/GUSIBasics.h	2025-06-14 17:57:14.605654659 +0200
+@@ -10,6 +10,10 @@
+ 
+ #include <ConditionalMacros.h>
+ 
++#define ESOCKTNOSUPPORT EINVAL
++#define ELOOK EAGAIN
++#define ESHUTDOWN ENOENT
++
+ // \section{Definition of compiler features}                               
+ //                                                                         
+ // If possible, we use unnamed namespaces to wrap internal code.           
+@@ -20,7 +24,7 @@
+ #endif
+ 
+ #ifdef GUSI_COMPILER_HAS_NAMESPACE
+-#define GUSI_USING_STD_NAMESPACE using namespace std; using namespace std::rel_ops;
++#define GUSI_USING_STD_NAMESPACE using namespace std;
+ #else
+ #define GUSI_USING_STD_NAMESPACE
+ #endif
+@@ -112,8 +116,8 @@
+ //                                                                         
+ // <Definition of hook handling>=                                          
+ #ifdef GUSI_INTERNAL
+-extern GUSISpinFn	gGUSISpinHook;
+-extern GUSIExecFn	gGUSIExecHook;
++extern "C" GUSISpinFn	gGUSISpinHook;
++extern "C" GUSIExecFn	gGUSIExecHook;
+ #endif /* GUSI_INTERNAL */
+ // \section{Definition of error handling}                                  
+ //                                                                         
+@@ -147,8 +151,8 @@
+ // <Definition of error handling>=                                         
+ class GUSIErrorSaver {
+ public:
+-	GUSIErrorSaver()  		{ fSavedErrno = ::errno; ::errno = 0; 	}
+-	~GUSIErrorSaver() 		{ if (!::errno) ::errno = fSavedErrno;  }
++	GUSIErrorSaver()  		{ fSavedErrno = errno; errno = 0; 	}
++	~GUSIErrorSaver() 		{ if (!errno) errno = fSavedErrno;  }
+ private:
+ 	int fSavedErrno;
+ };
+diff -ur GUSI_223/include/GUSIContext.h GUSI_223_patched/include/GUSIContext.h
+--- GUSI_223/include/GUSIContext.h	2025-06-14 17:51:54.511343838 +0200
++++ GUSI_223_patched/include/GUSIContext.h	2025-06-14 18:40:25.346736337 +0200
+@@ -337,18 +337,18 @@
+  // the global error variables.                                             
+  //                                                                         
+  // <Friends of [[GUSIContext]]>=                                           
+- friend pascal void GUSIThreadSwitchIn(ThreadID thread, GUSIContext * context);
+- friend pascal void GUSIThreadSwitchOut(ThreadID thread, GUSIContext * context);
++ pascal void GUSIThreadSwitchIn(ThreadID thread, GUSIContext * context);
++ pascal void GUSIThreadSwitchOut(ThreadID thread, GUSIContext * context);
+  // The terminator wakes up the joining thread if a join is pending.        
+  //                                                                         
+  // <Friends of [[GUSIContext]]>=                                           
+- friend pascal void GUSIThreadTerminator(ThreadID thread, GUSIContext * context);
++pascal void GUSIThreadTerminator(ThreadID thread, GUSIContext * context);
+ 
+ 	GUSIContext(ThreadID id);	
+ 	GUSIContext(
+ 		ThreadEntryProcPtr threadEntry, void *threadParam, 
+ 		Size stackSize, ThreadOptions options, void **threadResult, ThreadID *threadMade);
+-
++public:
+ 	virtual void SwitchIn();
+ 	virtual void SwitchOut();
+ 	virtual void Terminate();
+diff -ur GUSI_223/include/GUSIContextQueue.h GUSI_223_patched/include/GUSIContextQueue.h
+--- GUSI_223/include/GUSIContextQueue.h	2025-06-14 17:51:54.512343824 +0200
++++ GUSI_223_patched/include/GUSIContextQueue.h	2025-06-14 18:27:09.856392052 +0200
+@@ -97,6 +97,7 @@
+  	iterator & operator++();
+  	iterator operator++(int);
+  	bool operator==(const iterator other) const;
++    bool operator!=(const iterator other) const { return !operator==(other); }
+  	GUSIContext * operator*();
+  	GUSIContext * operator->();
+  private:
+@@ -112,7 +113,7 @@
+ 
+  iterator 		begin();
+  iterator 		end();
+-private:
++public:
+ 	// \section{Implementation of context queues}                              
+  //                                                                         
+  // Efficiency of context queues is quite important, so we provide a custom 
+diff -ur GUSI_223/include/GUSISpecific.h GUSI_223_patched/include/GUSISpecific.h
+--- GUSI_223/include/GUSISpecific.h	2025-06-14 17:51:54.533070471 +0200
++++ GUSI_223_patched/include/GUSISpecific.h	2025-06-14 18:07:47.193396729 +0200
+@@ -122,7 +122,7 @@
+ 	
+ 	const GUSISpecific *	Key() const 	{ return &fKey; 						}
+ 	T * get(GUSISpecificTable * table);
+-	T * get()								{ return get(GUSIContext::Current()); 	}
++	T * get();
+ protected:
+ 	GUSISpecific	fKey;
+ };

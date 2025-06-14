@@ -39,6 +39,8 @@ self: super: {
     '';
   };
 
+  GUSI = self.callPackage ../packages/GUSI {};
+
   # The Universal Interfaces shipped with Retro68's Nix files is too old,
   # so we need to fetch and patch in a new one.
   retro68 =
@@ -96,6 +98,8 @@ self: super: {
             patch $out/include/OpenTransport.h < ${../extras/mac-universal-fix-macro-conflict.patch}
 
             patch -p1 -d $out/RIncludes < ${../extras/mac-universal-fix-rez-syntax.patch}
+
+            ln -s Quickdraw.h $out/include/QuickDraw.h
 
             ln -s . $out/include/Carbon
           '';
