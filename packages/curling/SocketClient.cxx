@@ -32,22 +32,22 @@ CurlingTLSSocketClient::Connect(wxIPaddress& addr, bool wait)
 {
     wxSocketClient::Connect(addr, wait);
 
-    if (!tls_sni_set(ctx, addr.Hostname())) {
-        printf("CurlingTLSSocketClient: setting hostname failed!\n");
+    /*if (!tls_sni_set(ctx, addr.Hostname().c_str())) {
+        printf("CurlingTLSSocketClient: setting hostname to %s failed!\n", addr.Hostname().c_str());
         return false;
-    }
+    }*/
 
     tls_client_connect(ctx);
     Flush();
     return true;
 }
 
-CurlingTLSSocketClient &
+wxSocketBase &
 CurlingTLSSocketClient::Read(void *buffer, wxUint32 length)
 {
     unsigned char rawbuf[length];
 
-    wxSocketClient::Read(rawbuf, length);
+    wxSocketBase::Read(rawbuf, length);
 
     tls_consume_stream(ctx, rawbuf, length, validate_certificate);
 
@@ -56,21 +56,23 @@ CurlingTLSSocketClient::Read(void *buffer, wxUint32 length)
     return *this;
 }
 
-CurlingTLSSocketClient &
+wxSocketBase &
 CurlingTLSSocketClient::Write(const void *buffer, wxUint32 length)
 {
+    printf("CurlingTLSSocketClient: writing %d bytes", length);
+
     tls_write(ctx, (const unsigned char *)buffer, length);
 
     return Flush();
 }
 
-CurlingTLSSocketClient &
+wxSocketBase &
 CurlingTLSSocketClient::Flush()
 {
     unsigned int out_len = 0;
     const unsigned char *out_buffer = tls_get_write_buffer(ctx, &out_len);
 
-    wxSocketClient::Write(out_buffer, out_len);
+    wxSocketBase::Write(out_buffer, out_len);
 
     tls_buffer_clear(ctx);
     return *this;
@@ -83,7 +85,7 @@ CurlingTLSSocketClient::Close()
 
     Flush();
 
-    return wxSocketClient::Close();
+    return wxSocketBase::Close();
 }
 
 // vim: ft=cpp.doxygen

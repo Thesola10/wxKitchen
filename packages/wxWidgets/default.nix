@@ -59,6 +59,10 @@ in stdenv.mkDerivation rec {
       ./patches/0007-mac-define-verify-macros.patch
       ./patches/0008-mac-fix-corefoundation-includes.patch
       ./patches/0009-mac-fix-gsocket-includes.patch
+    ] ++ [
+      # By making select wxHTTP and wxSocket members virtual, I can redirect
+      # writes through Crypto Ancienne and easily implement HTTPS (see curling)
+      ./patches/1000-virtual-http-socket.patch
     ];
 
   # This is how you know this software is very obsolete

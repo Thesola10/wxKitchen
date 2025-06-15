@@ -13,26 +13,39 @@
 #include <wx/uri.h>
 
 
+wxString
+getPathRqFromURI(wxURI *uri)
+{
+    wxString prq = wxT("/");
+
+    if (uri->HasPath())
+        prq = uri->GetPath();
+    if (uri->HasQuery()) {
+        prq.append("?");
+        prq.append(uri->GetQuery());
+    }
+
+    return prq;
+}
+
 // Exports ahead!
 extern "C" {
 
-int
-curling_readURL(const char *url, char *buf, int len)
+wxInputStream *
+curling_streamURL(const char *url)
 {
     wxURI *uri = new wxURI(url);
 
-    wxObject *_link;
-    wxInputStream *conn;
-
-    int reslen = -1;
+    wxProtocol *_link;
 
     if (uri->GetScheme() == "https") {
         CurlingHTTPS *link;
+
         _link = link = new CurlingHTTPS();
 
         link->Connect(uri->GetServer(), 443);
 
-        conn = link->GetInputStream(uri->GetPath());
+        return link->GetInputStream(getPathRqFromURI(uri));
     } else {
         wxHTTP *link;
 
@@ -40,8 +53,18 @@ curling_readURL(const char *url, char *buf, int len)
 
         link->Connect(uri->GetServer(), 80);
 
-        conn = link->GetInputStream(uri->GetPath());
+        return link->GetInputStream(getPathRqFromURI(uri));
     }
+}
+
+int
+curling_readURL(const char *url, char *buf, int len)
+{
+    wxURI *uri = new wxURI(url);
+
+    wxInputStream *conn = curling_streamURL(url);
+
+    int reslen = -1;
 
     if (conn == NULL)
         return -1;
@@ -49,7 +72,6 @@ curling_readURL(const char *url, char *buf, int len)
     reslen = conn->Read(buf, len).LastRead();
 
     delete conn;
-    delete _link;
 
     return reslen;
 }

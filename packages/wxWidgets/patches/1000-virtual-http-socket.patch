@@ -1,0 +1,30 @@
+diff --git a/include/wx/protocol/protocol.h b/include/wx/protocol/protocol.h
+index 8d76485..ab48701 100644
+--- a/include/wx/protocol/protocol.h
++++ b/include/wx/protocol/protocol.h
+@@ -67,7 +67,7 @@ public:
+ 
+     // read a '\r\n' terminated line from the given socket and put it in
+     // result (without the terminators)
+-    static wxProtocolError ReadLine(wxSocketBase *socket, wxString& result);
++    virtual wxProtocolError ReadLine(wxSocketBase *socket, wxString& result);
+ 
+     // read a line from this socket - this one can be overridden in the
+     // derived classes if different line termination convention is to be used
+diff --git a/include/wx/socket.h b/include/wx/socket.h
+index 15a718b..5ec5e8d 100644
+--- a/include/wx/socket.h
++++ b/include/wx/socket.h
+@@ -130,10 +130,10 @@ public:
+   virtual bool  Close();
+   wxSocketBase& Discard();
+   wxSocketBase& Peek(void* buffer, wxUint32 nbytes);
+-  wxSocketBase& Read(void* buffer, wxUint32 nbytes);
++  virtual wxSocketBase& Read(void* buffer, wxUint32 nbytes);
+   wxSocketBase& ReadMsg(void *buffer, wxUint32 nbytes);
+   wxSocketBase& Unread(const void *buffer, wxUint32 nbytes);
+-  wxSocketBase& Write(const void *buffer, wxUint32 nbytes);
++  virtual wxSocketBase& Write(const void *buffer, wxUint32 nbytes);
+   wxSocketBase& WriteMsg(const void *buffer, wxUint32 nbytes);
+ 
+   void InterruptWait() { m_interrupt = true; };

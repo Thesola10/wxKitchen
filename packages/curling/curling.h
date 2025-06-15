@@ -28,26 +28,23 @@ public:
     CurlingTLSSocketClient(wxSocketFlags flags = wxSOCKET_NONE);
     ~CurlingTLSSocketClient();
 
-    virtual bool Connect(wxIPaddress& addr, bool wait = true);
+    bool Connect(wxIPaddress& addr, bool wait = true);
 
-    CurlingTLSSocketClient& Read(void *buffer, wxUint32 nbytes);
+    wxSocketBase& Read(void *buffer, wxUint32 nbytes);
 
-    CurlingTLSSocketClient& Write(const void *buffer, wxUint32 nbytes);
+    wxSocketBase& Write(const void *buffer, wxUint32 nbytes);
 
     bool Close();
 private:
-    CurlingTLSSocketClient& Flush();
+    wxSocketBase& Flush();
 
     struct TLSContext *ctx;
 };
 
-class CurlingHTTPS : public wxHTTP
+class CurlingHTTPS : public wxHTTP, private CurlingTLSSocketClient
 {
 protected:
-    CurlingTLSSocketClient *tlssock;
-
     wxIPaddress *m_addr;
-
 public:
     CurlingHTTPS();
     ~CurlingHTTPS();
@@ -57,12 +54,12 @@ public:
 
     wxInputStream *GetInputStream(const wxString& path);
 
-    wxProtocolError ReadLine(wxString& result);
-    CurlingTLSSocketClient& Write(const void *buffer, wxUint32 nbytes);
     bool Abort();
-    bool Close();
 
 friend class CurlingHTTPSStream;
+
+    DECLARE_DYNAMIC_CLASS(CurlingHTTPS)
+    DECLARE_PROTOCOL(CurlingHTTPS)
 };
 
 extern "C" {

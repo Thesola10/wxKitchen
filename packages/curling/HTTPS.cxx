@@ -13,6 +13,25 @@
 
 #include <wx/sckstrm.h>
 
+IMPLEMENT_PROTOCOL(CurlingHTTPS, wxT("https"), wxT("443"), true)
+
+CurlingHTTPS::CurlingHTTPS()
+{
+
+}
+
+CurlingHTTPS::~CurlingHTTPS()
+{
+
+}
+
+wxIMPLEMENT_CLASS_COMMON1(CurlingHTTPS, wxProtocol, CurlingHTTPS::wxCreateObject)
+wxObject *
+CurlingHTTPS::wxCreateObject()
+{
+    return (wxHTTP *) new CurlingHTTPS();
+}
+
 class CurlingHTTPSStream : public wxSocketInputStream
 {
 public:
@@ -21,7 +40,7 @@ public:
     unsigned long m_read_bytes;
 
     CurlingHTTPSStream(CurlingHTTPS *http)
-        : wxSocketInputStream(*http->tlssock), m_http(http)
+        : wxSocketInputStream((wxSocketBase &)http), m_http(http)
         {}
     size_t GetSize() const { return m_httpsize; }
     virtual ~CurlingHTTPSStream(void) { m_http->Abort(); }
@@ -47,19 +66,6 @@ CurlingHTTPSStream::OnSysRead(void *buffer, size_t bufsize)
     return ret;
 }
 
-
-CurlingHTTPS::CurlingHTTPS() : wxHTTP()
-{
-    tlssock = new CurlingTLSSocketClient();
-    m_addr = NULL;
-    m_post_buf = wxEmptyString;
-}
-
-CurlingHTTPS::~CurlingHTTPS()
-{
-    delete tlssock;
-}
-
 bool
 CurlingHTTPS::Connect(const wxString& host, unsigned short port)
 {
@@ -68,7 +74,7 @@ CurlingHTTPS::Connect(const wxString& host, unsigned short port)
     if (m_addr) {
         delete m_addr;
         m_addr = NULL;
-        Close();
+        CurlingTLSSocketClient::Close();
     }
 
     m_addr = addr = new wxIPV4address();
@@ -95,7 +101,7 @@ CurlingHTTPS::Connect(wxIPaddress& addr, bool wait)
 {
     if (m_addr) {
         delete m_addr;
-        Close();
+        CurlingTLSSocketClient::Close();
     }
 
     m_addr = (wxIPaddress *) addr.Clone();
@@ -118,13 +124,13 @@ CurlingHTTPS::GetInputStream(const wxString& path)
         return NULL;
     }
 
-    tlssock->Connect(*m_addr, true);
+    CurlingTLSSocketClient::Connect(*m_addr, true);
 
-    if (!tlssock->IsConnected())
+    if (!CurlingTLSSocketClient::IsConnected())
         return NULL;
 
     if (!BuildRequest(path, m_post_buf.empty() ? wxHTTP_GET : wxHTTP_POST)) {
-        printf("CurlingHTTPS: Building request failed!\n");
+        printf("CurlingHTTPS: Building request for %s failed!\n", path.c_str());
         return NULL;
     }
 
@@ -137,32 +143,38 @@ CurlingHTTPS::GetInputStream(const wxString& path)
 
     inp_stream->m_read_bytes = 0;
 
-    Notify(false);
-    SetFlags(wxSOCKET_BLOCK | wxSOCKET_WAITALL);
+    CurlingTLSSocketClient::Notify(false);
+    CurlingTLSSocketClient::SetFlags(wxSOCKET_BLOCK | wxSOCKET_WAITALL);
 
     return inp_stream;
 }
-
+/*
 wxProtocolError
-CurlingHTTPS::ReadLine(wxString &result)
+CurlingHTTPS::ReadLine(wxString& result)
 {
     return wxProtocol::ReadLine(tlssock, result);
 }
 
-CurlingTLSSocketClient&
+wxProtocolError
+CurlingHTTPS::ReadLine(wxSocketBase *_unused, wxString& result)
+{
+    return wxProtocol::ReadLine(tlssock, result);
+}
+
+wxSocketBase&
 CurlingHTTPS::Write(const void *buffer, wxUint32 len)
 {
     return tlssock->Write(buffer, len);
-}
+}*/
 
 bool
 CurlingHTTPS::Abort()
 {
-    return tlssock->Close();
+    return CurlingTLSSocketClient::Close();
 }
-
+/*
 bool
 CurlingHTTPS::Close()
 {
     return tlssock->Close();
-}
+}*/

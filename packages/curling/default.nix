@@ -22,7 +22,7 @@ stdenv.mkDerivation {
   buildPhase = ''
     for file in *.cxx
     do
-      $CXX -c $file -o $file.o
+      $CXX -g -c $file -o $file.o
     done
   '';
 
