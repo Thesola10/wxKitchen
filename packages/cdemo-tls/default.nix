@@ -3,7 +3,8 @@
   lib,
   buildWxApp,
   wxWidgets,
-  cryanc
+  cryanc,
+  curling
 }:
 
 let
@@ -18,10 +19,13 @@ in buildWxApp rec {
 
   buildInputs = [
     cryanc
+    curling
   ];
 
-  NIX_CFLAGS_COMPILE = "-I${cryanc}/include";
-  NIX_CFLAGS_LINK = "-L${cryanc}/lib -lcryanc";
+  reservedMemoryMacOS = 7680;
+
+  NIX_CFLAGS_COMPILE = "-I${cryanc}/include -I${curling}/include";
+  NIX_CFLAGS_LINK = "-L${curling} -lcurling -L${cryanc}/lib -lcryanc";
 
   buildPhase = ''
     mkdir -p $out/bin

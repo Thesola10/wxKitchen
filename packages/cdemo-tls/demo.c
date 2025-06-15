@@ -1,15 +1,22 @@
 #include <unistd.h>
 #include <stdbool.h>
 #include <wxc.h>
-#include <cryanc.h>
+#include <curling.h>
 
-TClass(wxClosure) closure;
+wxTextCtrl *label;
 
 void btnClicked(void *evt)
 {
-    tls_init();
+    int result = 0;
 
-    ELJApp_Exit();
+    char buf[256];
+
+    result = curling_readURL("https://api.ipify.org/", buf, 255);
+
+    if (result == -1)
+        wxTextCtrl_Replace(label, 0, 255, "Error getting IP.");
+    else
+        wxTextCtrl_Replace(label, 0, 255, buf);
 }
 
 void app_main(void *dat)
@@ -19,9 +26,10 @@ void app_main(void *dat)
     wxButton *bt;
     wxClosure *evt;
 
-    fr = wxFrame_Create(NULL, 10, "wxKitchen demo written in C", 40, 40, 320, 240, wxDEFAULT_FRAME_STYLE);
+    fr = wxFrame_Create(NULL, 10, "wxKitchen demo app with HTTPS", 40, 40, 320, 240, wxDEFAULT_FRAME_STYLE);
     pan = wxPanel_Create((wxWindow *) fr, 11, 0, 0, 320, 240, wxTAB_TRAVERSAL);
-    bt = wxButton_Create((wxWindow *) pan, 12, "Nice", 40, 40, 100, 20, wxBU_EXACTFIT);
+    bt = wxButton_Create((wxWindow *) pan, 12, "Connect", 40, 40, 100, 20, wxBU_EXACTFIT);
+    label = wxTextCtrl_Create((wxWindow *)pan, 15, "Click the Connect button!", 40, 40, 200, 40, wxTE_READONLY);
     evt = wxClosure_Create(btnClicked, NULL);
 
     wxBoxSizer *parent = wxBoxSizer_Create(wxVERTICAL);
@@ -32,6 +40,7 @@ void app_main(void *dat)
     wxSizer_AddSizer((wxSizer *) parent, (wxSizer *) btns, 0, wxALIGN_RIGHT | wxRIGHT | wxBOTTOM, 10, NULL);
 
     wxSizer_AddWindow((wxSizer *) btns, (wxWindow *) bt, 0, 0, wxALL, NULL);
+    wxSizer_AddWindow((wxSizer *) body, (wxWindow *) label, 0, 0, wxALL, NULL);
 
     wxEvtHandler_Connect((wxEvtHandler *) fr, 12, 12, expEVT_COMMAND_BUTTON_CLICKED(), evt);
 
