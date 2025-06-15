@@ -11,6 +11,10 @@
   nativeBuildInputs ? [],
   postInstall ? "",
 
+  extraCFlags ? "",
+  extraCXXFlags ? "",
+  extraLDFlags ? "",
+
   # Whether to link against the wxc C bindings library for wxWidgets.
   withWxc ? false,
 
@@ -18,23 +22,30 @@
   # Mac Classic apps need to specify their heap size in advance, so
   # try increasing this if your app crashes on Mac OS 9 but not OS X.
   reservedMemoryMacOS ? 2048,
+
+  # Whether to link against Retro68's console on Mac OS
+  withConsoleMacOS ? false,
   ...
 }@args:
 
-stdenv.mkDerivation (args // {
+let
+  isRetro68 = stdenv.hostPlatform ? retro68;
+in stdenv.mkDerivation (args // {
   hardeningDisable = [ "all" ];
 
   buildInputs = [
     wxWidgets
   ] ++ lib.optionals withWxc [
     wxc
+  ] ++ lib.optionals (isRetro68 && withConsoleMacOS) [
+    retro68.console
   ] ++ buildInputs;
 
-  nativeBuildInputs = lib.optionals (stdenv.hostPlatform ? retro68) [
+  nativeBuildInputs = lib.optionals isRetro68 [
     retro68.tools
   ] ++ nativeBuildInputs;
 
-  postInstall = lib.optionalString (stdenv.hostPlatform ? retro68) ''
+  postInstall = lib.optionalString isRetro68 ''
     for file in $out/bin/*
     do
       MakePEF $file -o $file.pef
@@ -48,9 +59,14 @@ stdenv.mkDerivation (args // {
   '' + postInstall;
 
   NIX_CFLAGS_COMPILE = (lib.readFile "${wxWidgets}/nix-support/cc-cflags")
-                     + lib.optionalString withWxc "-I${wxc}/include";
-  NIX_CXXFLAGS_COMPILE = lib.readFile "${wxWidgets}/nix-support/libcxx-cxxflags";
-  NIX_CFLAGS_LINK = lib.optionalString withWxc "-L${wxc}/lib -lwxc "
+                     + lib.optionalString withWxc "-I${wxc}/include "
+                     + extraCFlags;
+  NIX_CXXFLAGS_COMPILE = lib.readFile "${wxWidgets}/nix-support/libcxx-cxxflags"
+                       + extraCXXFlags;
+  NIX_CFLAGS_LINK = extraLDFlags
+                  + lib.optionalString withWxc " -L${wxc}/lib -lwxc "
                   + (lib.readFile "${wxWidgets}/nix-support/cc-ldflags")
+                  + lib.optionalString (isRetro68 && withConsoleMacOS) 
+                      " -L${retro68.console} -lRetroConsoleCarbon"
                   + " -lstdc++";
 })

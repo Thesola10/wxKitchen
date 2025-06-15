@@ -43,8 +43,10 @@ curling_readURL(const char *url, char *buf, int len)
         conn = link->GetInputStream(uri->GetPath());
     }
 
-    conn->Read(buf, len);
-    reslen = conn->LastRead();
+    if (conn == NULL)
+        return -1;
+
+    reslen = conn->Read(buf, len).LastRead();
 
     delete conn;
     delete _link;

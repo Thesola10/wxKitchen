@@ -3,7 +3,7 @@
 #include <wxc.h>
 #include <curling.h>
 
-wxTextCtrl *label;
+wxStaticText *label;
 
 void btnClicked(void *evt)
 {
@@ -14,9 +14,9 @@ void btnClicked(void *evt)
     result = curling_readURL("https://api.ipify.org/", buf, 255);
 
     if (result == -1)
-        wxTextCtrl_Replace(label, 0, 255, "Error getting IP.");
+        wxWindow_SetLabel((wxWindow *) label, "Error connecting to api.ipify.org");
     else
-        wxTextCtrl_Replace(label, 0, 255, buf);
+        wxWindow_SetLabel((wxWindow *) label, buf);
 }
 
 void app_main(void *dat)
@@ -29,7 +29,7 @@ void app_main(void *dat)
     fr = wxFrame_Create(NULL, 10, "wxKitchen demo app with HTTPS", 40, 40, 320, 240, wxDEFAULT_FRAME_STYLE);
     pan = wxPanel_Create((wxWindow *) fr, 11, 0, 0, 320, 240, wxTAB_TRAVERSAL);
     bt = wxButton_Create((wxWindow *) pan, 12, "Connect", 40, 40, 100, 20, wxBU_EXACTFIT);
-    label = wxTextCtrl_Create((wxWindow *)pan, 15, "Click the Connect button!", 40, 40, 200, 40, wxTE_READONLY);
+    label = wxStaticText_Create((wxWindow *) pan, 15, "Click the Connect button!", 40, 40, 12000, 40, wxALIGN_LEFT);
     evt = wxClosure_Create(btnClicked, NULL);
 
     wxBoxSizer *parent = wxBoxSizer_Create(wxVERTICAL);

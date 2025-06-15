@@ -9,7 +9,7 @@
 
 let
   exe = stdenv.hostPlatform.extensions.executable;
-in buildWxApp rec {
+in buildWxApp {
   withWxc = true;
 
   pname = "wxKitchen-C-demo";
@@ -22,15 +22,16 @@ in buildWxApp rec {
     curling
   ];
 
+  withConsoleMacOS = true;
   reservedMemoryMacOS = 7680;
 
-  NIX_CFLAGS_COMPILE = "-I${cryanc}/include -I${curling}/include";
-  NIX_CFLAGS_LINK = "-L${curling} -lcurling -L${cryanc}/lib -lcryanc";
+  extraCFlags = "-I${cryanc}/include -I${curling}/include";
+  extraLDFlags = "-L${curling} -lcurling -L${cryanc}/lib -lcryanc";
 
   buildPhase = ''
     mkdir -p $out/bin
     ${lib.optionalString stdenv.hostPlatform.isWindows "$WINDRES -I${wxWidgets}/include -O coff -o demo.res win32/demo.rc"}
     $CC demo.c ${lib.optionalString stdenv.hostPlatform.isWindows "demo.res"} \
-      -o $out/bin/wxKitchenDemoC${exe} ${NIX_CFLAGS_LINK}
+      -o $out/bin/wxKitchenDemoC${exe}
   '';
 }

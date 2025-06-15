@@ -10,7 +10,7 @@
 #include "curling.h"
 
 int
-validate_certificate (struct TLSContext *ctx, struct TLSCertificate *chain, int len)
+validate_certificate (struct TLSContext *ctx, struct TLSCertificate **chain, int len)
 {
     return no_error; // huehuehue
 }
@@ -33,11 +33,13 @@ CurlingTLSSocketClient::Connect(wxIPaddress& addr, bool wait)
     wxSocketClient::Connect(addr, wait);
 
     if (!tls_sni_set(ctx, addr.Hostname())) {
+        printf("CurlingTLSSocketClient: setting hostname failed!\n");
         return false;
     }
 
     tls_client_connect(ctx);
     Flush();
+    return true;
 }
 
 CurlingTLSSocketClient &
@@ -47,9 +49,11 @@ CurlingTLSSocketClient::Read(void *buffer, wxUint32 length)
 
     wxSocketClient::Read(rawbuf, length);
 
-    tls_consume_stream(ctx, rawbuf, length, (tls_validation_function) validate_certificate);
+    tls_consume_stream(ctx, rawbuf, length, validate_certificate);
 
     tls_read(ctx, (unsigned char *)buffer, (unsigned int)length);
+
+    return *this;
 }
 
 CurlingTLSSocketClient &
@@ -57,7 +61,7 @@ CurlingTLSSocketClient::Write(const void *buffer, wxUint32 length)
 {
     tls_write(ctx, (const unsigned char *)buffer, length);
 
-    Flush();
+    return Flush();
 }
 
 CurlingTLSSocketClient &
@@ -69,6 +73,7 @@ CurlingTLSSocketClient::Flush()
     wxSocketClient::Write(out_buffer, out_len);
 
     tls_buffer_clear(ctx);
+    return *this;
 }
 
 bool

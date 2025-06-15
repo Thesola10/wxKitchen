@@ -21,7 +21,7 @@ public:
     unsigned long m_read_bytes;
 
     CurlingHTTPSStream(CurlingHTTPS *http)
-        : wxSocketInputStream((wxSocketBase &) http->tlssock), m_http(http)
+        : wxSocketInputStream(*http->tlssock), m_http(http)
         {}
     size_t GetSize() const { return m_httpsize; }
     virtual ~CurlingHTTPSStream(void) { m_http->Abort(); }
@@ -51,6 +51,8 @@ CurlingHTTPSStream::OnSysRead(void *buffer, size_t bufsize)
 CurlingHTTPS::CurlingHTTPS() : wxHTTP()
 {
     tlssock = new CurlingTLSSocketClient();
+    m_addr = NULL;
+    m_post_buf = wxEmptyString;
 }
 
 CurlingHTTPS::~CurlingHTTPS()
@@ -96,7 +98,7 @@ CurlingHTTPS::Connect(wxIPaddress& addr, bool wait)
         Close();
     }
 
-    m_addr = addr.Clone();
+    m_addr = (wxIPaddress *) addr.Clone();
 
     wxIPV4address *ipv4addr = wxDynamicCast(&addr, wxIPV4address);
     if (ipv4addr)
@@ -110,20 +112,21 @@ CurlingHTTPS::GetInputStream(const wxString& path)
 {
     CurlingHTTPSStream *inp_stream;
 
-    wxString new_path;
-
     m_perr = wxPROTO_CONNERR;
-    if (!m_addr)
+    if (!m_addr) {
+        printf("CurlingHTTPS: No address!\n");
         return NULL;
+    }
 
-    tlssock->Connect((wxIPaddress &) m_addr, false);
-    tlssock->WaitOnConnect(10);
+    tlssock->Connect(*m_addr, true);
 
     if (!tlssock->IsConnected())
         return NULL;
 
-    if (!BuildRequest(path, m_post_buf.empty() ? wxHTTP_GET : wxHTTP_POST))
+    if (!BuildRequest(path, m_post_buf.empty() ? wxHTTP_GET : wxHTTP_POST)) {
+        printf("CurlingHTTPS: Building request failed!\n");
         return NULL;
+    }
 
     inp_stream = new CurlingHTTPSStream(this);
 
@@ -143,7 +146,7 @@ CurlingHTTPS::GetInputStream(const wxString& path)
 wxProtocolError
 CurlingHTTPS::ReadLine(wxString &result)
 {
-    return wxProtocol::ReadLine((wxSocketBase *) tlssock, result);
+    return wxProtocol::ReadLine(tlssock, result);
 }
 
 CurlingTLSSocketClient&

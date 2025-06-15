@@ -46,6 +46,8 @@ class CurlingHTTPS : public wxHTTP
 protected:
     CurlingTLSSocketClient *tlssock;
 
+    wxIPaddress *m_addr;
+
 public:
     CurlingHTTPS();
     ~CurlingHTTPS();
