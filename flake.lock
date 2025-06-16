@@ -101,22 +101,6 @@
         "type": "github"
       }
     },
-    "prc-tools": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1617855543,
-        "narHash": "sha256-03yTEMHkKtti+8kGKpU0xWQTOEHvNyp8Errowoe8JJY=",
-        "owner": "jichu4n",
-        "repo": "prc-tools-remix",
-        "rev": "5974f0bc9bc4526147c0bde6e06bea7c0c8fb07f",
-        "type": "github"
-      },
-      "original": {
-        "owner": "jichu4n",
-        "repo": "prc-tools-remix",
-        "type": "github"
-      }
-    },
     "retro68": {
       "inputs": {
         "flake-parts": "flake-parts",
@@ -141,7 +125,6 @@
       "inputs": {
         "flake-utils": "flake-utils",
         "nixpkgs": "nixpkgs",
-        "prc-tools": "prc-tools",
         "retro68": "retro68"
       }
     },

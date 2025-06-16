@@ -3,15 +3,14 @@
     "nixpkgs".url = github:NixOS/nixpkgs/nixos-23.11;
 
     "retro68".url = github:autc04/Retro68;
-
-    "prc-tools".url = github:jichu4n/prc-tools-remix;
-    "prc-tools".flake = false;
   };
 
   outputs = { self, nixpkgs, flake-utils, retro68, ... }:
   flake-utils.lib.eachDefaultSystem (system:
   let
     retro68Platforms = (import "${retro68}/nix/platforms.nix");
+
+    palmPlatforms = (import ./packages/platform/palm/platforms.nix);
 
     platforms = {
       "ppc-macos" = {
@@ -33,6 +32,20 @@
         crossSystem = pkgs.pkgsCross.musl32.pkgsStatic.stdenv.hostPlatform;
         overlays = [
           (import ./overlays/linux.nix)
+          (import ./overlays/all.nix)
+        ];
+      };
+      "m68k-palmos" = {
+        crossSystem = palmPlatforms.m68k;
+        overlays = [
+          (import ./overlays/palm.nix)
+          (import ./overlays/all.nix)
+        ];
+      };
+      "arm-palmos" = {
+        crossSystem = palmPlatforms.arm;
+        overlays = [
+          (import ./overlays/palm.nix)
           (import ./overlays/all.nix)
         ];
       };
