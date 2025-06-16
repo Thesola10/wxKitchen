@@ -17,7 +17,7 @@ IMPLEMENT_PROTOCOL(CurlingHTTPS, wxT("https"), wxT("443"), true)
 
 CurlingHTTPS::CurlingHTTPS()
 {
-
+    m_addr = NULL;
 }
 
 CurlingHTTPS::~CurlingHTTPS()
@@ -148,33 +148,9 @@ CurlingHTTPS::GetInputStream(const wxString& path)
 
     return inp_stream;
 }
-/*
-wxProtocolError
-CurlingHTTPS::ReadLine(wxString& result)
-{
-    return wxProtocol::ReadLine(tlssock, result);
-}
-
-wxProtocolError
-CurlingHTTPS::ReadLine(wxSocketBase *_unused, wxString& result)
-{
-    return wxProtocol::ReadLine(tlssock, result);
-}
-
-wxSocketBase&
-CurlingHTTPS::Write(const void *buffer, wxUint32 len)
-{
-    return tlssock->Write(buffer, len);
-}*/
 
 bool
 CurlingHTTPS::Abort()
 {
     return CurlingTLSSocketClient::Close();
 }
-/*
-bool
-CurlingHTTPS::Close()
-{
-    return tlssock->Close();
-}*/

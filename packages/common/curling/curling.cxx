@@ -38,30 +38,33 @@ curling_streamURL(const char *url)
 
     wxProtocol *_link;
 
-    if (uri->GetScheme() == "https") {
+    wxString scm = uri->GetScheme();
+
+    if (scm == "https") {
         CurlingHTTPS *link;
 
         _link = link = new CurlingHTTPS();
 
-        link->Connect(uri->GetServer(), 443);
+        link->CurlingHTTPS::Connect(uri->GetServer(), 443);
 
-        return link->GetInputStream(getPathRqFromURI(uri));
-    } else {
+        return link->CurlingHTTPS::GetInputStream(getPathRqFromURI(uri));
+    } else if (scm == "http") {
         wxHTTP *link;
 
         _link = link = new wxHTTP();
 
-        link->Connect(uri->GetServer(), 80);
+        link->wxHTTP::Connect(uri->GetServer(), 80);
 
-        return link->GetInputStream(getPathRqFromURI(uri));
+        return link->wxHTTP::GetInputStream(getPathRqFromURI(uri));
+    } else {
+        printf("Unsupported scheme: %s\n", scm.c_str());
+        return NULL;
     }
 }
 
 int
 curling_readURL(const char *url, char *buf, int len)
 {
-    wxURI *uri = new wxURI(url);
-
     wxInputStream *conn = curling_streamURL(url);
 
     int reslen = -1;

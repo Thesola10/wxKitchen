@@ -28,20 +28,23 @@ public:
     CurlingTLSSocketClient(wxSocketFlags flags = wxSOCKET_NONE);
     ~CurlingTLSSocketClient();
 
-    bool Connect(wxIPaddress& addr, bool wait = true);
+    bool
+    Connect(wxIPaddress& addr, bool wait = true);
 
-    wxSocketBase& Read(void *buffer, wxUint32 nbytes);
+    wxSocketBase&
+    Read(void *buffer, wxUint32 nbytes) override;
 
-    wxSocketBase& Write(const void *buffer, wxUint32 nbytes);
+    wxSocketBase&
+    Write(const void *buffer, wxUint32 nbytes) override;
 
-    bool Close();
+    bool Close() override;
 private:
     wxSocketBase& Flush();
 
     struct TLSContext *ctx;
 };
 
-class CurlingHTTPS : public wxHTTP, private CurlingTLSSocketClient
+class CurlingHTTPS : public wxHTTP, public CurlingTLSSocketClient
 {
 protected:
     wxIPaddress *m_addr;
@@ -49,10 +52,14 @@ public:
     CurlingHTTPS();
     ~CurlingHTTPS();
 
-    bool Connect(const wxString& host, unsigned short port);
-    bool Connect(wxIPaddress& addr, bool wait = true);
+    bool
+    Connect(const wxString& host, unsigned short port);
 
-    wxInputStream *GetInputStream(const wxString& path);
+    bool
+    Connect(wxIPaddress& addr, bool wait = true);
+
+    wxInputStream *
+    GetInputStream(const wxString& path);
 
     bool Abort();
 
@@ -66,6 +73,9 @@ extern "C" {
 #else // !__cplusplus
 #include <wxc.h>
 #endif
+
+wxInputStream *
+curling_streamURL(const char *url);
 
 int
 curling_readURL(const char *url, char *buffer, int len);

@@ -1,45 +1,10 @@
 self: super: {
 
-  hfsfuse = super.stdenv.mkDerivation rec {
-    pname = "hfsfuse";
-    version = "0.292";
+  hfsfuse = self.callPackage ../packages/platform/macos/hfsfuse {};
 
-    buildInputs = with super; [
-      fuse3
-      utf8proc
-      zlib
-      lzfse
-      libarchive
-    ];
+  macb = self.callPackage ../packages/platform/macos/macb {};
 
-    PREFIX = placeholder "out";
-
-    src = super.fetchFromGitHub {
-      owner = "0x09";
-      repo = "hfsfuse";
-      rev = version;
-      hash = "sha256-nz6P1b8icDfL1aAZr8klQ7kD9Q8oddUZcJ5DbfY5V0w=";
-    };
-  };
-
-  macb = super.stdenv.mkDerivation rec {
-    pname = "macb";
-    version = "unstable-20201214";
-
-    src = super.fetchFromGitHub {
-      owner = "aksommerville";
-      repo = "macb";
-      rev = "master";
-      hash = "sha256-IKS/rLN1vRbOpZWZ1Bz1hWDYUlHhisiaN3C+Rc60Kdg=";
-    };
-
-    installPhase = ''
-      mkdir -p $out/bin
-      make install SUDO= INSTALLDST=$out/bin/macb
-    '';
-  };
-
-  GUSI = self.callPackage ../packages/GUSI {};
+  GUSI = self.callPackage ../packages/platform/macos/GUSI {};
 
   # The Universal Interfaces shipped with Retro68's Nix files is too old,
   # so we need to fetch and patch in a new one.

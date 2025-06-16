@@ -45,6 +45,8 @@ CurlingTLSSocketClient::Connect(wxIPaddress& addr, bool wait)
 wxSocketBase &
 CurlingTLSSocketClient::Read(void *buffer, wxUint32 length)
 {
+    printf("CurlingTLSSocketClient: reading %d bytes", length);
+
     unsigned char rawbuf[length];
 
     wxSocketBase::Read(rawbuf, length);

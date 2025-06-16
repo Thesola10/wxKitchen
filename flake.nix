@@ -29,6 +29,13 @@
           (import ./overlays/all.nix)
         ];
       };
+      "i686-linux24" = {
+        crossSystem = pkgs.pkgsCross.musl32.pkgsStatic.stdenv.hostPlatform;
+        overlays = [
+          (import ./overlays/linux.nix)
+          (import ./overlays/all.nix)
+        ];
+      };
     };
 
     makePkgsCross = platform: import nixpkgs {
@@ -39,6 +46,9 @@
 
     pkgs = import nixpkgs {
       inherit system;
+      overlays = [
+        (import ./overlays/all.nix)
+      ];
     };
   in {
     legacyPackages = pkgs;
@@ -53,13 +63,17 @@
 
     devShells = builtins.foldl'
       (l: r: l // {
-        "wxWidgets-${r}" = (makePkgsCross platforms.${r}).buildWxApp {
+        "wxWidgets-${r}" =
+          let pkgs = makePkgsCross platforms.${r};
+          in pkgs.buildWxApp {
           name = "wxKitchen-shell";
           src = pkgs.emptyDirectory;
+
+          nativeBuildInputs = pkgs.lib.optionals (pkgs.stdenv.hostPlatform ? isRetro68) [
+            pkgs.retro68.tools
+          ];
         };
-        "wxc-${r}" = (makePkgsCross platforms.${r}).buildWxApp {
-          name = "wxKitchen-shell-with-wxc";
-          src = pkgs.emptyDirectory;
+        "wxc-${r}" = self.devShells.${system}."wxWidgets-${r}".overrideAttrs {
           withWxc = true;
         };
       }) {} (builtins.attrNames platforms);

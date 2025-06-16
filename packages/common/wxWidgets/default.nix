@@ -5,6 +5,7 @@
   libjpeg_original,
   zlib,
   pcre2,
+  gtk2,
   pkg-config,
   buildPackages,
 
@@ -12,7 +13,8 @@
 
   unicode ? true,
   withMac ? stdenv.hostPlatform.retro68 or false,
-  withMSW ? stdenv.hostPlatform.isWindows
+  withMSW ? stdenv.hostPlatform.isWindows,
+  withGTK2 ? stdenv.hostPlatform.isLinux
 }:
 
 let
@@ -35,6 +37,8 @@ in stdenv.mkDerivation rec {
     [
       libjpeg_original
       zlib
+    ] ++ lib.optionals withGTK2 [
+      gtk2
     ];
 
   buildInputs =
@@ -116,6 +120,7 @@ in stdenv.mkDerivation rec {
       "--without-regex"
     ] ++ lib.optional withMSW "--with-msw"
       ++ lib.optional withMac "--with-mac"
+      ++ lib.optional withGTK2 "--with-gtk=2"
       ++ lib.optional unicode "--with-unicode";
 
   postInstall = ''
