@@ -9,8 +9,7 @@
 
 #include "curling.h"
 
-static unsigned char
-rawMessage[8192];
+static unsigned char rawMessage[8192];
 
 int
 validate_certificate (struct TLSContext *ctx, struct TLSCertificate **chain, int len)
@@ -22,6 +21,8 @@ validate_certificate (struct TLSContext *ctx, struct TLSCertificate **chain, int
 CurlingTLSSocketClient::CurlingTLSSocketClient(wxSocketFlags flags)
     : wxSocketClient(flags)
 {
+    tls_init();
+
     ctx = tls_create_context(0, TLS_V12);
 }
 
@@ -48,7 +49,8 @@ CurlingTLSSocketClient::Connect(wxIPaddress& addr, bool wait)
     while (!tls_established(ctx)) {
         Discard();
         Flush();
-        if (handshakeTTL-- == 0) {
+        handshakeTTL -= 1;
+        if (handshakeTTL == 0) {
             printf("TLS connection failed!\n");
             return false;
         }
@@ -111,8 +113,11 @@ CurlingTLSSocketClient::Flush()
     unsigned int out_len = 0;
     const unsigned char *out_buffer = tls_get_write_buffer(ctx, &out_len);
 
-    if (out_len)
+    while ((out_buffer) && (out_len > 0)) {
         wxSocketBase::Write(out_buffer, out_len);
+
+        out_buffer = tls_get_write_buffer(ctx, &out_len);
+    }
 
     tls_buffer_clear(ctx);
     return *this;

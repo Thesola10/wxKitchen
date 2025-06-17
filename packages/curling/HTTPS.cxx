@@ -15,7 +15,7 @@
 
 IMPLEMENT_PROTOCOL(CurlingHTTPS, wxT("https"), wxT("443"), true)
 
-CurlingHTTPS::CurlingHTTPS()
+CurlingHTTPS::CurlingHTTPS() : CurlingTLSSocketClient()
 {
     m_addr = NULL;
 }
