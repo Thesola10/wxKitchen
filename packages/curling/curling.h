@@ -53,15 +53,23 @@ public:
     ~CurlingHTTPS();
 
     bool
-    Connect(const wxString& host, unsigned short port);
+    Connect(const wxString& host, unsigned short port) override;
 
     bool
     Connect(wxIPaddress& addr, bool wait = true);
 
     wxInputStream *
-    GetInputStream(const wxString& path);
+    GetInputStream(const wxString& path) override;
 
-    bool Abort();
+    wxSocketBase&
+    Read(void *buffer, wxUint32 nbytes) override
+    { return CurlingTLSSocketClient::Read(buffer, nbytes); }
+
+    wxSocketBase&
+    Write(const void *buffer, wxUint32 nbytes) override
+    { return CurlingTLSSocketClient::Write(buffer, nbytes); }
+
+    bool Abort() override;
 
 friend class CurlingHTTPSStream;
 
@@ -74,9 +82,23 @@ extern "C" {
 #include <wxc.h>
 #endif
 
+/**
+ * @brief   Open a wxInputStream retrieving the body of an URL, using HTTP or HTTPS.
+ *
+ * @param url       The URL to open. Protocol must be HTTP or HTTPS.
+ * @return A wxInputStream object from which the HTTP body can be obtained.
+ */
 wxInputStream *
 curling_streamURL(const char *url);
 
+/**
+ * @brief   Open and read the first len bytes from an URL, using HTTP or HTTPS.
+ *
+ * @param url       The URL to open. Protocol must be HTTP or HTTPS.
+ * @param buffer    The buffer to write the results to.
+ * @param len       How many bytes to write to the buffer.
+ * @return The real amount of bytes read, or -1 on error.
+ */
 int
 curling_readURL(const char *url, char *buffer, int len);
 
