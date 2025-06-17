@@ -9,6 +9,9 @@
 
 #include "curling.h"
 
+static unsigned char
+rawMessage[8192];
+
 int
 validate_certificate (struct TLSContext *ctx, struct TLSCertificate **chain, int len)
 {
@@ -32,6 +35,8 @@ CurlingTLSSocketClient::Connect(wxIPaddress& addr, bool wait)
 {
     wxSocketClient::Connect(addr, wait);
 
+    int handshakeTTL = 40;
+
     /*if (!tls_sni_set(ctx, addr.Hostname().c_str())) {
         printf("CurlingTLSSocketClient: setting hostname to %s failed!\n", addr.Hostname().c_str());
         return false;
@@ -39,22 +44,37 @@ CurlingTLSSocketClient::Connect(wxIPaddress& addr, bool wait)
 
     tls_client_connect(ctx);
     Flush();
+
+    while (!tls_established(ctx)) {
+        Discard();
+        Flush();
+        if (handshakeTTL-- == 0) {
+            printf("TLS connection failed!\n");
+            return false;
+        }
+    }
     return true;
 }
 
 wxSocketBase &
 CurlingTLSSocketClient::Read(void *buffer, wxUint32 length)
 {
+    int res = 0;
+
     printf("CurlingTLSSocketClient: reading %d bytes", length);
 
-    unsigned char rawbuf[length];
+    wxSocketBase::Read(rawMessage, sizeof(rawMessage));
 
-    wxSocketBase::Read(rawbuf, length);
+    res = tls_consume_stream(ctx, rawMessage, sizeof(rawMessage), validate_certificate);
 
-    tls_consume_stream(ctx, rawbuf, length, validate_certificate);
+    if (res < 0) {
+        printf("TLS read error!\n");
+        return *this;
+    }
 
     tls_read(ctx, (unsigned char *)buffer, (unsigned int)length);
 
+    tls_buffer_clear(ctx);
     return *this;
 }
 
@@ -68,13 +88,31 @@ CurlingTLSSocketClient::Write(const void *buffer, wxUint32 length)
     return Flush();
 }
 
+wxSocketBase&
+CurlingTLSSocketClient::Discard()
+{
+    int res = 0;
+
+    wxSocketBase::Read(rawMessage, sizeof(rawMessage));
+    res = tls_consume_stream(ctx, rawMessage, sizeof(rawMessage), validate_certificate);
+    tls_buffer_clear(ctx);
+
+    if (res < 0) {
+        printf("TLS handshake error!\n");
+        return *this;
+    }
+
+    return *this;
+}
+
 wxSocketBase &
 CurlingTLSSocketClient::Flush()
 {
     unsigned int out_len = 0;
     const unsigned char *out_buffer = tls_get_write_buffer(ctx, &out_len);
 
-    wxSocketBase::Write(out_buffer, out_len);
+    if (out_len)
+        wxSocketBase::Write(out_buffer, out_len);
 
     tls_buffer_clear(ctx);
     return *this;

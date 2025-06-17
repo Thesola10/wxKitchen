@@ -37,6 +37,9 @@ public:
     wxSocketBase&
     Write(const void *buffer, wxUint32 nbytes) override;
 
+    wxSocketBase&
+    Discard() override;
+
     bool Close() override;
 private:
     wxSocketBase& Flush();

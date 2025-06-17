@@ -1,10 +1,13 @@
 diff --git a/include/wx/socket.h b/include/wx/socket.h
-index 15a718b..5ec5e8d 100644
+index 15a718b..2c57d72 100644
 --- a/include/wx/socket.h
 +++ b/include/wx/socket.h
-@@ -130,10 +130,10 @@ public:
+@@ -128,12 +128,12 @@ public:
+ 
+   // base IO
    virtual bool  Close();
-   wxSocketBase& Discard();
+-  wxSocketBase& Discard();
++  virtual wxSocketBase& Discard();
    wxSocketBase& Peek(void* buffer, wxUint32 nbytes);
 -  wxSocketBase& Read(void* buffer, wxUint32 nbytes);
 +  virtual wxSocketBase& Read(void* buffer, wxUint32 nbytes);
