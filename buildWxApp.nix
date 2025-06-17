@@ -3,7 +3,8 @@
   lib,
   wxWidgets,
   wxc,
-  retro68 ? null
+  retro68 ? null,
+  palm ? null
 }:
 
 {
@@ -14,6 +15,8 @@
   extraCFlags ? "",
   extraCXXFlags ? "",
   extraLDFlags ? "",
+
+  pname ? "",
 
   # Whether to link against the wxc C bindings library for wxWidgets.
   withWxc ? false,
@@ -30,6 +33,7 @@
 
 let
   isRetro68 = stdenv.hostPlatform ? retro68;
+  isPalmOS = stdenv.hostPlatform ? isPalm;
 in stdenv.mkDerivation (args // {
   hardeningDisable = [ "all" ];
 
@@ -53,8 +57,14 @@ in stdenv.mkDerivation (args // {
           ${retro68.libretro}/RIncludes/RetroCarbonAPPL.r \
           --copy ${wxWidgets}/lib/libwx_base_carbon.bin \
           -DMEMORY_RESERVED_KB=${toString reservedMemoryMacOS} \
-          -DCFRAG_NAME="\"$(basename $file)\"" --data $file.pef \
+          -DCFRAG_NAME="\"${pname}\"" --data $file.pef \
           -o $file.bin -t APPL -c ro68
+    done
+  '' + lib.optionalString isPalmOS ''
+    for file in $out/bin/*
+    do
+      ${stdenv.hostPlatform.config}-obj-res $file
+      build-prc $file.prc "${pname}" WXKI *.$file.grc
     done
   '' + postInstall;
 
@@ -66,7 +76,7 @@ in stdenv.mkDerivation (args // {
   NIX_CFLAGS_LINK = extraLDFlags
                   + lib.optionalString withWxc " -L${wxc}/lib -lwxc "
                   + (lib.readFile "${wxWidgets}/nix-support/cc-ldflags")
-                  + lib.optionalString (isRetro68 && withConsoleMacOS) 
+                  + lib.optionalString (isRetro68 && withConsoleMacOS)
                       " -L${retro68.console} -lRetroConsoleCarbon"
                   + " -lstdc++";
 })

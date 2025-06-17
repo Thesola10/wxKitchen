@@ -64,7 +64,7 @@ void app_main(void *dat)
     wxSizer_AddWindow((wxSizer *) body, (wxWindow *) label, 0, 0, wxALL, NULL);
 
     wxEvtHandler_Connect((wxEvtHandler *) fr, 12, 12, expEVT_COMMAND_BUTTON_CLICKED(), evt);
-    wxEvtHandler_Connect((wxEvtHandler *) fr, 13, 13, expEVT_COMMAND_BUTTON_CLICKED(), evt);
+    wxEvtHandler_Connect((wxEvtHandler *) fr, 13, 13, expEVT_COMMAND_BUTTON_CLICKED(), evt2);
 
     wxWindow_SetSizer((wxWindow *) pan, (wxSizer *) parent);
 

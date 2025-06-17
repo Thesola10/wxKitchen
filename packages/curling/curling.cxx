@@ -12,7 +12,6 @@
 
 #include <wx/uri.h>
 
-
 wxString
 getPathRqFromURI(wxURI *uri)
 {
@@ -36,26 +35,23 @@ curling_streamURL(const char *url)
 {
     wxURI *uri = new wxURI(url);
 
-    wxProtocol *_link;
+    CurlingHTTPS *httpsLink = NULL;
+    wxHTTP *httpLink = NULL;
 
     wxString scm = uri->GetScheme();
 
     if (scm == "https") {
-        CurlingHTTPS *link;
+        httpsLink = new CurlingHTTPS();
 
-        _link = link = new CurlingHTTPS();
+        httpsLink->Connect(uri->GetServer(), 443);
 
-        link->CurlingHTTPS::Connect(uri->GetServer(), 443);
-
-        return link->CurlingHTTPS::GetInputStream(getPathRqFromURI(uri));
+        return httpsLink->GetInputStream(getPathRqFromURI(uri));
     } else if (scm == "http") {
-        wxHTTP *link;
+        httpLink = new wxHTTP();
 
-        _link = link = new wxHTTP();
+        httpLink->Connect(uri->GetServer(), 80);
 
-        link->wxHTTP::Connect(uri->GetServer(), 80);
-
-        return link->wxHTTP::GetInputStream(getPathRqFromURI(uri));
+        return httpLink->GetInputStream(getPathRqFromURI(uri));
     } else {
         printf("Unsupported scheme: %s\n", scm.c_str());
         return NULL;

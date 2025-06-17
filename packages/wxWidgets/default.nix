@@ -72,12 +72,19 @@ in stdenv.mkDerivation rec {
   # This is how you know this software is very obsolete
   hardeningDisable = [ "all" ];
 
-  CFLAGS = "-fpermissive -Wno-error=narrowing"
-         + lib.optionalString stdenv.hostPlatform.isWindows " -D_mkdir=mkdir -D_rmdir=rmdir"
-         + lib.optionalString isRetro68 " -DTARGET_API_MAC_OSX=0 -DTARGET_API_MAC_CARBON=1 -DBuildingMoreFilesXForMacOS9=1";
-  CXXFLAGS = "-fpermissive -Wno-error=narrowing"
-           + lib.optionalString stdenv.hostPlatform.isWindows " -D_mkdir=mkdir -D_rmdir=rmdir"
-           + lib.optionalString isRetro68 " -DTARGET_API_MAC_OSX=0 -DTARGET_API_MAC_CARBON=1 -DBuildingMoreFilesXForMacOS9=1";
+  CFLAGS =
+    [
+      "-fpermissive"
+      "-Wno-error=narrowing"
+    ] ++ lib.optionals stdenv.hostPlatform.isWindows [
+      "-D_mkdir=mkdir"
+      "-D_rmdir=rmdir"
+    ] ++ lib.optionals isRetro68 [
+      "-DTARGET_API_MAC_OSX=0"
+      "-DTARGET_API_MAC_CARBON=1"
+      "-DBuildingMoreFilesXForMacOS9=1"
+    ];
+  CXXFLAGS = CFLAGS;
 
   LDFLAGS = lib.optionalString isRetro68 "-lCarbonFrameworkLib";
 
