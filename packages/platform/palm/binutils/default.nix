@@ -11,6 +11,8 @@ stdenv.mkDerivation rec {
   version = "2.14";
   src = "${palm.sources.prc-tools-remix}/binutils-${version}";
 
+  outputs = [ "out" "dev" ];
+
   buildInputs = [
     flex
     bison
@@ -19,7 +21,13 @@ stdenv.mkDerivation rec {
   configureFlags = [
     "--target=${stdenv.targetPlatform.config}"
     "--disable-doc"
+    "--enable-bfd"
   ];
+
+  postInstall = ''
+    mkdir -p $dev
+    cp -r include $dev/include
+  '';
 
   enableParallelBuilding = true;
 }

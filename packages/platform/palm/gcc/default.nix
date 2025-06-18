@@ -13,11 +13,14 @@ stdenv.mkDerivation rec {
   src = "${palm.sources.prc-tools-remix}/gcc-${version}";
 
   buildInputs = [
+    palm.prc-tools
     palm.binutils_unwrapped
     gmp
     mpfr
     libmpc
   ];
+
+  CFLAGS = "-I${palm.prc-tools.src}/include";
 
   configureFlags = [
     "--enable-targets=${stdenv.targetPlatform.config}"

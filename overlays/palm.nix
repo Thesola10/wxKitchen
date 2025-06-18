@@ -29,6 +29,8 @@ self: super: {
   } // super.lib.optionalAttrs (super.targetPlatform ? isPalm) {
   ###### Cross-compilers exclusively
 
+    prc-tools = self.callPackage ../packages/platform/palm/prc-tools {};
+
     binutils_unwrapped = self.callPackage ../packages/platform/palm/binutils {};
     gcc_unwrapped = self.callPackage ../packages/platform/palm/gcc {};
 
@@ -43,12 +45,12 @@ self: super: {
       libc = null;
 
       extraPackages = with self.targetPackages.palm; [
-
+        libc
       ];
     };
   } // super.lib.optionalAttrs (super.hostPlatform ? isPalm) {
   ###### Native Palm libraries
-
+    libc = self.callPackage ../packages/platform/palm/prc-tools/libc.nix {};
   });
 
   binutils = if (super.targetPlatform ? isPalm)
