@@ -132,14 +132,21 @@ in stdenv.mkDerivation rec {
       "--with-libjpeg"
       "--with-flavour=wxKitchen"
       "--without-libtiff"
-    ] ++ lib.optional isRetro68 [
+    ] ++ lib.optionals isRetro68 [
       "--without-regex"
-    ] ++ lib.optional withMSW "--with-msw"
-      ++ lib.optional withMac "--with-mac"
-      ++ lib.optional withGTK2 "--with-gtk=2"
-      ++ lib.optional withUniversal "--enable-universal"
-      ++ lib.optional (withUniversal && stdenv.hostPlatform.isLinux) "--with-x11"
-      ++ lib.optional unicode "--with-unicode";
+    ] ++ lib.optionals withMSW [
+      "--with-msw"
+    ] ++ lib.optionals withMac [
+      "--with-mac"
+    ] ++ lib.optionals withGTK2 [
+      "--with-gtk=2"
+    ] ++ lib.optionals withUniversal [
+      "--enable-universal"
+    ] ++ lib.optionals (withUniversal && stdenv.hostPlatform.isLinux) [
+      "--with-x11"
+    ] ++ lib.optionals unicode [
+      "--with-unicode"
+    ];
 
   postInstall = ''
     pushd $out/include

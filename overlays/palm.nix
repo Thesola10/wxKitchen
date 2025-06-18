@@ -11,7 +11,7 @@ self: super: {
         rev = "master";
         hash = "sha256-03yTEMHkKtti+8kGKpU0xWQTOEHvNyp8Errowoe8JJY=";
       }; 
- 
+
       palm-os-sdk = super.fetchFromGitHub {
         owner = "jichu4n";
         repo = "palm-os-sdk";
