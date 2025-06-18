@@ -1,0 +1,129 @@
+diff --git a/wxc/include/wrapper.h b/wxc/include/wrapper.h
+index 8470093..2065ad3 100644
+--- a/wxc/include/wrapper.h
++++ b/wxc/include/wrapper.h
+@@ -128,7 +128,7 @@ class ELJDataObject: public wxObject
+                 ELJDataObject(void* _data) : wxObject() {data = _data;};
+                 void* data;
+ };
+-
++#if wxUSE_DRAG_AND_DROP
+ class ELJDropTarget : public wxDropTarget
+ {
+         private:
+@@ -249,7 +249,7 @@ class ELJFileDropTarget : public wxFileDropTarget
+                 void SetOnDragOver (DragThreeFunc _func) {on_drag_func = _func;};
+                 void SetOnLeave    (DragZeroFunc _func)  {on_leave_func = _func;};
+ };
+-
++#endif //wxUSE_DRAG_AND_DROP
+ class ELJTextValidator : public wxTextValidator
+ {
+         public:
+@@ -271,7 +271,7 @@ class ELJTextValidator : public wxTextValidator
+                 void*        obj;
+                 ValidateFunc fnc;
+ };
+-
++#if wxUSE_SOCKETS
+ class ELJConnection : public wxTCPConnection
+ {
+         private:
+@@ -385,7 +385,7 @@ class ELJClient : public wxTCPClient
+                         return result;
+                 };
+ };
+-
++#endif // wxUSE_SOCKETS
+ class ELJPrintout : public wxPrintout
+ {
+         private:
+diff --git a/wxc/src/wrapper.cpp b/wxc/src/wrapper.cpp
+index 5c7f220..4758ee4 100644
+--- a/wxc/src/wrapper.cpp
++++ b/wxc/src/wrapper.cpp
+@@ -418,6 +418,7 @@ EWXWEXPORT(int, ELJApp_SendIdleEventsToWindow)(void* win)
+         return (int)wxGetApp().SendIdleEvents((wxWindow*) win);
+ }
+ */
++#if wxUSE_TOOLTIPS
+ EWXWEXPORT(void, ELJApp_EnableTooltips)(int _enable)
+ {
+         wxToolTip::Enable (_enable != 0);
+@@ -427,7 +428,7 @@ EWXWEXPORT(void, ELJApp_SetTooltipDelay)(int _ms)
+ {
+         wxToolTip::SetDelay (_ms);
+ }
+-
++#endif //wxUSE_TOOLTIPS
+ EWXWEXPORT(void, ELJApp_InitAllImageHandlers)()
+ {
+         wxInitAllImageHandlers();
+diff --git a/wxc/src/ewxw/eljdc.cpp b/wxc/src/ewxw/eljdc.cpp
+index 4227988..4359dad 100644
+--- a/wxc/src/ewxw/eljdc.cpp
++++ b/wxc/src/ewxw/eljdc.cpp
+@@ -520,7 +520,7 @@ EWXWEXPORT(int, wxScreenDC_EndDrawingOnTop)(void* _obj)
+ {
+ 	return (int)((wxScreenDC*)_obj)->EndDrawingOnTop();
+ }
+-	
++#if wxUSE_METAFILE
+ EWXWEXPORT(void*,wxMetafileDC_Create)(void* _file)
+ {
+ #if defined(__WXGTK__) || defined(__WXMAC__) 
+@@ -596,5 +596,5 @@ EWXWEXPORT(void, wxMetafile_Delete) (void* _obj)
+ 	delete (wxMetafile*)_obj;
+ #endif
+ }
+-
++#endif //wxUSE_METAFILE
+ }
+diff --git a/wxc/src/ewxw/eljdnd.cpp b/wxc/src/ewxw/eljdnd.cpp
+index f8a916c..7eb50be 100644
+--- a/wxc/src/ewxw/eljdnd.cpp
++++ b/wxc/src/ewxw/eljdnd.cpp
+@@ -1,5 +1,5 @@
+ #include "wrapper.h"
+-
++#if wxUSE_DRAG_AND_DROP
+ wxDragResult ELJTextDropTarget::OnData(wxCoord x, wxCoord y, wxDragResult def)
+ {
+ 	if (on_data_func)
+@@ -374,3 +374,4 @@ EWXWEXPORT(void, wxDataObjectComposite_Add)(void* _obj, void* _dat, int _preferr
+ }
+ 
+ }
++#endif //wxUSE_DRAG_AND_DROP
+diff --git a/wxc/src/ewxw/eljwindow.cpp b/wxc/src/ewxw/eljwindow.cpp
+index 4804b66..0198269 100644
+--- a/wxc/src/ewxw/eljwindow.cpp
++++ b/wxc/src/ewxw/eljwindow.cpp
+@@ -505,7 +505,7 @@ EWXWEXPORT(void, wxWindow_ScrollWindowRect)(void* _obj, int dx, int dy, int x, i
+ 	const wxRect rect(x, y, w, h);
+ 	((wxWindow*)_obj)->ScrollWindow(dx, dy, &rect);
+ }
+-	
++#if wxUSE_TOOLTIP
+ EWXWEXPORT(void, wxWindow_SetToolTip)(void* _obj, char* tip )
+ {
+ 	((wxWindow*)_obj)->SetToolTip( tip );
+@@ -523,7 +523,8 @@ EWXWEXPORT(int, wxWindow_GetToolTip)(void* _obj, void* _buf)
+ 	}
+ 	return 0;
+ }
+-	
++#endif //wxUSE_TOOLTIP
++#if wxUSE_DRAG_AND_DROP
+ EWXWEXPORT(void, wxWindow_SetDropTarget)(void* _obj, void* dropTarget )
+ {
+ 	((wxWindow*)_obj)->SetDropTarget((wxDropTarget*) dropTarget);
+@@ -533,7 +534,7 @@ EWXWEXPORT(void*, wxWindow_GetDropTarget)(void* _obj)
+ {
+ 	return (void*)((wxWindow*)_obj)->GetDropTarget();
+ }
+-	
++#endif //wxUSE_DRAG_AND_DROP
+ EWXWEXPORT(void, wxWindow_SetConstraints)(void* _obj, void* constraints )
+ {
+ 	((wxWindow*)_obj)->SetConstraints((wxLayoutConstraints*) constraints);

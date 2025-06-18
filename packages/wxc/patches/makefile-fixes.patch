@@ -24,12 +24,15 @@ index e1e4027..8b6a146 100755
  MV=mv
  CD=cd
 diff --git a/makefile b/makefile
-index 249689b..9842d95 100644
+index 249689b..2df477e 100644
 --- a/makefile
 +++ b/makefile
-@@ -713,11 +713,9 @@ endif
+@@ -711,13 +711,11 @@ endif
+ 
+ # dynamic link library on unix: generates single .so file
  $(basename $(WXC-LIB)).so: $(WXC-OBJS)
- 	$(CXX) -shared -o $@ $^ $(WXC-LIBS) -Wl --soname=$(SHARED-PREFIX)$(notdir $@)
+-	$(CXX) -shared -o $@ $^ $(WXC-LIBS) -Wl --soname=$(SHARED-PREFIX)$(notdir $@)
++	$(CXX) -shared -o $@ $^ $(WXC-LIBS) -Wl,--soname=$(SHARED-PREFIX)$(notdir $@)
  
 -# dynamic link library on macOSX: generates single .so file
 -$(basename $(WXC-LIB)).dylib: $(WXC-OBJS)

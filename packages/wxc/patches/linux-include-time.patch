@@ -1,0 +1,13 @@
+diff --git a/wxc/include/ewxw/wxc_glue.h b/wxc/include/ewxw/wxc_glue.h
+index 2841f4a..3051894 100644
+--- a/wxc/include/ewxw/wxc_glue.h
++++ b/wxc/include/ewxw/wxc_glue.h
+@@ -1,6 +1,8 @@
+ #ifndef WXC_GLUE_H
+ #define WXC_GLUE_H
+ 
++#include <time.h>
++
+ /* $Id: wxc_glue.h,v 1.23 2005/02/25 11:14:58 dleijen Exp $ */
+ 
+ /* Null */

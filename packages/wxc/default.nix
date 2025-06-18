@@ -7,6 +7,7 @@
 }:
 
 let
+  # Stand-in noop script to configure ourselves without GHC
   nil = buildPackages.writeShellScript "nil" ''
     true
   '';
@@ -23,31 +24,45 @@ in stdenv.mkDerivation rec {
   };
 
   NIX_CFLAGS_COMPILE = lib.readFile "${wxWidgets}/nix-support/cc-cflags"
-                     + " -fpermissive";
+                     + " -fpermissive"
+                     + lib.optionalString stdenv.hostPlatform.isLinux " -fPIC";
   NIX_CXXFLAGS_COMPILE = lib.readFile "${wxWidgets}/nix-support/libcxx-cxxflags"
-                     + " -fpermissive";
+                     + " -fpermissive"
+                     + lib.optionalString stdenv.hostPlatform.isLinux " -fPIC";
 
   buildInputs = [
     wxWidgets
   ];
 
   patches = [
-    ./c-typed-interface.patch
-    ./sockets-conditional-include.patch
+    # This lets all wxWidgets C++ classes be defined as incomplete structs of
+    # same name, providing a semblance of type safety and more useful tooltips
+    # in language servers.
+    ./patches/c-typed-interface.patch
+
+    # Lots of features get disabled between backends and platforms, we need to
+    # conditionally remove them here too lest compilation fails.
+    ./patches/conditional-features.patch
+
+    # This adds a static building option and fixes the -Wl flag for Linux targets
+    ./patches/makefile-fixes.patch
+  ] ++ lib.optionals stdenv.hostPlatform.isLinux [
+    ./patches/linux-include-time.patch
   ] ++ lib.optionals (stdenv.hostPlatform ? retro68) [
-    ./mac-fix-darwin-detection.patch
-    ./mac-fix-wxcolour-return-type.patch
-    ./mac-build-static.patch
+    ./patches/mac-fix-darwin-detection.patch
+    ./patches/mac-fix-wxcolour-return-type.patch
   ];
 
   hardeningDisable = [ "all" ];
+
+  enableParallelBuilding = true;
 
   configurePhase = ''
     PATH=${wxWidgets}/bin:$PATH ./configure --prefix=$out --hc=${nil} --hcpkg=${nil}
   '';
 
   buildPhase = ''
-    make wxc-bindist AR=$AR
+    make -j$NIX_BUILD_CORES wxc-bindist AR=$AR
   '';
 
   installPhase = ''
@@ -58,5 +73,7 @@ in stdenv.mkDerivation rec {
     grep -zoPh 'enum .*\n?{(.|\n)*?};\n' ${wxWidgets}/include/wx/defs.h >> $out/include/wx_constants.h
     cd $out/lib
     ln -s libwxc-*.a libwxc.a
+  '' + lib.optionalString stdenv.hostPlatform.isLinux ''
+    ln -s libwxc-*.so libwxc.so
   '';
 }

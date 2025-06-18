@@ -1,0 +1,19 @@
+diff --git a/include/wx/x11/dataform.h b/include/wx/x11/dataform.h
+index 0e6fed7..07da488 100644
+--- a/include/wx/x11/dataform.h
++++ b/include/wx/x11/dataform.h
+@@ -52,13 +52,13 @@ public:
+     
+     // implementation
+     wxDataFormatId GetType() const;
++    void SetType( wxDataFormatId type );
+     
+ private:
+     wxDataFormatId   m_type;
+     NativeFormat     m_format;
+     
+     void PrepareFormats();
+-    void SetType( wxDataFormatId type );
+ };
+ 
+ 

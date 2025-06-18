@@ -15,7 +15,7 @@
   unicode ? true,
   withMac ? stdenv.hostPlatform.retro68 or false,
   withMSW ? stdenv.hostPlatform.isWindows,
-  withGTK2 ? false,#stdenv.hostPlatform.isLinux,
+  withGTK2 ? /* stdenv.hostPlatform.isLinux */ false,
   withUniversal ? ! (withMac || withMSW || withGTK2)
 }:
 
@@ -57,17 +57,20 @@ in stdenv.mkDerivation rec {
     # I can't just declare Retro68 a "Unix" because many key functions just
     # aren't implemented.
     lib.optionals isRetro68 [
-      ./patches/0000-mac-drop-pascal-strings.patch
-      ./patches/0001-mac-disable-win32-defines.patch
-      ./patches/0002-mac-expose-strptime.patch
-      ./patches/0003-mac-add-retro68-detection.patch
-      ./patches/0004-mac-add-missing-unistd-h.patch
-      ./patches/0005-mac-fix-GetTempBuffer-declaration.patch
-      ./patches/0006-mac-fix-return-types.patch
-      ./patches/0007-mac-define-verify-macros.patch
-      ./patches/0008-mac-fix-corefoundation-includes.patch
-      ./patches/0009-mac-fix-gsocket-includes.patch
+      ./patches/mac/0000-drop-pascal-strings.patch
+      ./patches/mac/0001-disable-win32-defines.patch
+      ./patches/mac/0002-expose-strptime.patch
+      ./patches/mac/0003-add-retro68-detection.patch
+      ./patches/mac/0004-add-missing-unistd-h.patch
+      ./patches/mac/0005-fix-GetTempBuffer-declaration.patch
+      ./patches/mac/0006-fix-return-types.patch
+      ./patches/mac/0007-define-verify-macros.patch
+      ./patches/mac/0008-fix-corefoundation-includes.patch
+      ./patches/mac/0009-fix-gsocket-includes.patch
     ] ++ [
+      # wxc needs this to be public, which for some reason on X11 alone it isn't.
+      ./patches/x11/0000-dataform-make-settype-public.patch
+
       # By making select wxHTTP and wxSocket members virtual, I can redirect
       # writes through Crypto Ancienne and easily implement HTTPS (see curling)
       ./patches/1000-virtual-http-socket.patch
@@ -83,6 +86,8 @@ in stdenv.mkDerivation rec {
     ] ++ lib.optionals stdenv.hostPlatform.isWindows [
       "-D_mkdir=mkdir"
       "-D_rmdir=rmdir"
+    ] ++ lib.optionals stdenv.hostPlatform.isLinux [
+      "-fPIC"
     ] ++ lib.optionals isRetro68 [
       "-DTARGET_API_MAC_OSX=0"
       "-DTARGET_API_MAC_CARBON=1"
