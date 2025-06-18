@@ -7,6 +7,7 @@
   pcre2,
   gtk2,
   pkg-config,
+  libX11,
   buildPackages,
 
   retro68 ? null,
@@ -14,7 +15,8 @@
   unicode ? true,
   withMac ? stdenv.hostPlatform.retro68 or false,
   withMSW ? stdenv.hostPlatform.isWindows,
-  withGTK2 ? stdenv.hostPlatform.isLinux
+  withGTK2 ? false,#stdenv.hostPlatform.isLinux,
+  withUniversal ? ! (withMac || withMSW || withGTK2)
 }:
 
 let
@@ -39,6 +41,8 @@ in stdenv.mkDerivation rec {
       zlib
     ] ++ lib.optionals withGTK2 [
       gtk2
+    ] ++ lib.optionals (withUniversal && stdenv.hostPlatform.isLinux) [
+      libX11
     ];
 
   buildInputs =
@@ -128,6 +132,8 @@ in stdenv.mkDerivation rec {
     ] ++ lib.optional withMSW "--with-msw"
       ++ lib.optional withMac "--with-mac"
       ++ lib.optional withGTK2 "--with-gtk=2"
+      ++ lib.optional withUniversal "--enable-universal"
+      ++ lib.optional (withUniversal && stdenv.hostPlatform.isLinux) "--with-x11"
       ++ lib.optional unicode "--with-unicode";
 
   postInstall = ''

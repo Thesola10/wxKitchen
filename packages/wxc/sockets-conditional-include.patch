@@ -1,7 +1,25 @@
 diff --git a/wxc/include/wrapper.h b/wxc/include/wrapper.h
-index 8470093..b26063d 100644
+index 8470093..2065ad3 100644
 --- a/wxc/include/wrapper.h
 +++ b/wxc/include/wrapper.h
+@@ -128,7 +128,7 @@ class ELJDataObject: public wxObject
+                 ELJDataObject(void* _data) : wxObject() {data = _data;};
+                 void* data;
+ };
+-
++#if wxUSE_DRAG_AND_DROP
+ class ELJDropTarget : public wxDropTarget
+ {
+         private:
+@@ -249,7 +249,7 @@ class ELJFileDropTarget : public wxFileDropTarget
+                 void SetOnDragOver (DragThreeFunc _func) {on_drag_func = _func;};
+                 void SetOnLeave    (DragZeroFunc _func)  {on_leave_func = _func;};
+ };
+-
++#endif //wxUSE_DRAG_AND_DROP
+ class ELJTextValidator : public wxTextValidator
+ {
+         public:
 @@ -271,7 +271,7 @@ class ELJTextValidator : public wxTextValidator
                  void*        obj;
                  ValidateFunc fnc;
@@ -20,41 +38,3 @@ index 8470093..b26063d 100644
  class ELJPrintout : public wxPrintout
  {
          private:
-diff --git a/wxc/src/extra.cpp b/wxc/src/extra.cpp
-index db4ccf9..6cc371e 100644
---- a/wxc/src/extra.cpp
-+++ b/wxc/src/extra.cpp
-@@ -153,6 +153,7 @@ void wxTimerEx::Notify()
- /*-----------------------------------------------------------------------------
-   wxInputSink wrapper: adds non-blocking event driven input channel
- -----------------------------------------------------------------------------*/
-+#if wxUSE_THREAD
- class wxInputSink;
- 
- class wxInputSinkEvent : public wxEvent
-@@ -309,7 +310,7 @@ void wxInputSinkEvent::Read( wxInputStream* input )
-   /* add zero terminator */
-   m_buffer[m_lastRead] = 0;
- }
--
-+#endif //wxUSE_THREAD
- 
- /*-----------------------------------------------------------------------------
-   wxHtmlWindow wrapper: adds normal events instead of using inheritance
-@@ -1939,6 +1940,7 @@ EWXWEXPORT(void, wxcEndBusyCursor)(void)
- /*-----------------------------------------------------------------------------
-   wxInputSink
- -----------------------------------------------------------------------------*/
-+#if wxUSE_THREAD
- EWXWEXPORT(wxInputSink*, wxInputSink_Create)( wxInputStream* input, wxEvtHandler* evtHandler, int bufferLen )
- {
-   return new wxInputSink(input,evtHandler,bufferLen);
-@@ -1969,7 +1971,7 @@ EWXWEXPORT(char*, wxInputSinkEvent_LastInput)( wxInputSinkEvent* obj )
- {
-   return obj->LastInput();
- }
--
-+#endif //wxUSE_THREAD
- 
- /*-----------------------------------------------------------------------------
-   html window

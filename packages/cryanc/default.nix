@@ -18,12 +18,23 @@ stdenv.mkDerivation rec {
   NIX_CFLAGS_COMPILE = lib.optionalString (stdenv.hostPlatform ? retro68) "-Dusleep=sqrt";
 
   buildPhase = ''
-    $CC -I${./.} -c cryanc.c -o cryanc.o
+    if ! $CC -E -o /dev/null - <<< "#include <arpa/inet.h>"
+    then
+      cp -r ${./.}/arpa .
+    fi
+
+    $CC -c cryanc.c -o cryanc.o
   '';
 
   installPhase = ''
     mkdir -p $out/lib $out/include
-    cp -r cryanc.h ${./.}/arpa $out/include/
+    cp -r cryanc.h $out/include/
+
+
+    if ! $CC -E -o /dev/null - <<< "#include <arpa/inet.h>"
+    then
+      cp -r ${./.}/arpa $out/include/
+    fi
     $AR rcs $out/lib/libcryanc.a cryanc.o
   '';
 }
