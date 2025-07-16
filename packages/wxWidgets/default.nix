@@ -127,6 +127,7 @@ in stdenv.mkDerivation rec {
       "--enable-vendor=wxKitchen"
       "--enable-url"
       "--enable-sound"
+      "--enable-gif"
       "--disable-precomp-headers"
       "--with-libpng"
       "--with-libjpeg"
@@ -158,6 +159,10 @@ in stdenv.mkDerivation rec {
     $out/bin/wx-config --cxxflags > $out/nix-support/libcxx-cxxflags
     $out/bin/wx-config --libs > $out/nix-support/cc-ldflags
     echo "-L${libjpeg_original}/lib -L${zlib}/lib" >> $out/nix-support/cc-ldflags
+
+    # Compatibility with wxSkinToy's CMakeLists
+    touch $out/wx-config.in
+    ln -s . $out/wx-config
   '' + lib.optionalString isRetro68 ''
     $CC -E -P -I ${retro68.universal}/RIncludes - < src/mac/carbon/corersrc.r > corersrc.full.r
     ${retro68.tools}/bin/Rez corersrc.full.r -o $out/lib/libwx_base_carbon.bin
