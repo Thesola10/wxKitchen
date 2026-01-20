@@ -1,5 +1,5 @@
 diff --git a/include/wx/socket.h b/include/wx/socket.h
-index 15a718b..2c57d72 100644
+index 15a718b..15bef93 100644
 --- a/include/wx/socket.h
 +++ b/include/wx/socket.h
 @@ -128,12 +128,12 @@ public:
@@ -18,3 +18,16 @@ index 15a718b..2c57d72 100644
    wxSocketBase& WriteMsg(const void *buffer, wxUint32 nbytes);
  
    void InterruptWait() { m_interrupt = true; };
+@@ -179,9 +179,9 @@ private:
+   friend class wxDatagramSocket;
+ 
+   // low level IO
+-  wxUint32 _Read(void* buffer, wxUint32 nbytes);
+-  wxUint32 _Write(const void *buffer, wxUint32 nbytes);
+-  bool     _Wait(long seconds, long milliseconds, wxSocketEventFlags flags);
++  virtual wxUint32 _Read(void* buffer, wxUint32 nbytes);
++  virtual wxUint32 _Write(const void *buffer, wxUint32 nbytes);
++  virtual bool     _Wait(long seconds, long milliseconds, wxSocketEventFlags flags);
+ 
+   // pushback buffer
+   void     Pushback(const void *buffer, wxUint32 size);

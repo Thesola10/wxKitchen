@@ -37,6 +37,12 @@ public:
     wxSocketBase&
     Write(const void *buffer, wxUint32 nbytes) override;
 
+    wxUint32
+    _Read(void *buffer, wxUint32 nbytes) override;
+
+    wxUint32
+    _Write(const void *buffer, wxUint32 nbytes) override;
+
     wxSocketBase&
     Discard() override;
 

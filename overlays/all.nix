@@ -1,5 +1,6 @@
 self: super: {
   wxWidgets = self.callPackage ../packages/wxWidgets {};
+  wxSkinToy = self.callPackage ../packages/wxSkinToy {};
   wxc = self.callPackage ../packages/wxc {};
   cryanc = self.callPackage ../packages/cryanc {};
   curling = self.callPackage ../packages/curling {};
