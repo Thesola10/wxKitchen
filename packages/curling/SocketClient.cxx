@@ -58,8 +58,8 @@ CurlingTLSSocketClient::Connect(wxIPaddress& addr, bool wait)
     return true;
 }
 
-wxSocketBase &
-CurlingTLSSocketClient::Read(void *buffer, wxUint32 length)
+wxUint32
+CurlingTLSSocketClient::_Read(void *buffer, wxUint32 length)
 {
     int res = 0;
 
@@ -71,23 +71,26 @@ CurlingTLSSocketClient::Read(void *buffer, wxUint32 length)
 
     if (res < 0) {
         printf("TLS read error!\n");
-        return *this;
+        return -1;
     }
 
     tls_read(ctx, (unsigned char *)buffer, (unsigned int)length);
 
     tls_buffer_clear(ctx);
-    return *this;
+    return res;
 }
 
-wxSocketBase &
-CurlingTLSSocketClient::Write(const void *buffer, wxUint32 length)
+wxUint32
+CurlingTLSSocketClient::_Write(const void *buffer, wxUint32 length)
 {
+    int res = 0;
+
     printf("CurlingTLSSocketClient: writing %d bytes", length);
 
-    tls_write(ctx, (const unsigned char *)buffer, length);
+    res = tls_write(ctx, (const unsigned char *)buffer, length);
 
-    return Flush();
+    Flush();
+    return res;
 }
 
 wxSocketBase&
